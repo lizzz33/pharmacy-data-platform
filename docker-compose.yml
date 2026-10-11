@@ -8,10 +8,11 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pharmacy -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U pharmacy -d postgres && psql -h 127.0.0.1 -U pharmacy -d pos_service_db -Atqc 'SELECT 1 FROM contract.v_receipt LIMIT 0'"]
       interval: 2s
       timeout: 5s
       retries: 15
+      start_period: 60s
     volumes:
       - pharmacy_postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro

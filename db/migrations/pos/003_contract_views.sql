@@ -12,8 +12,7 @@ SELECT pharmacy_bk,
        closed_at,
        is_active,
        updated_at
-  FROM pharmacy
- WHERE deleted_at IS NULL;
+  FROM pharmacy;
 
 CREATE VIEW contract.v_receipt AS
 WITH discounts AS (
@@ -45,8 +44,7 @@ SELECT r.receipt_bk,
   FROM receipt r
   JOIN shift s USING (shift_bk)
   JOIN cash_register cr USING (register_bk)
-  JOIN pharmacy p
-    ON p.pharmacy_bk = cr.pharmacy_bk AND p.deleted_at IS NULL
+  JOIN pharmacy p ON p.pharmacy_bk = cr.pharmacy_bk
   LEFT JOIN discounts d USING (receipt_bk);
 
 CREATE VIEW contract.v_receipt_line AS

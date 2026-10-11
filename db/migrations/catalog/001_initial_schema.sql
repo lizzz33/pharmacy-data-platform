@@ -61,7 +61,9 @@ CREATE TABLE sku (
     is_active boolean NOT NULL,
     deleted_at timestamptz,
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+    updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    CONSTRAINT ck_sku_deleted_inactive
+        CHECK (deleted_at IS NULL OR NOT is_active)
 );
 
 CREATE INDEX ix_sku_manufacturer ON sku (manufacturer_bk);
@@ -111,6 +113,8 @@ CREATE TABLE price_version (
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     CHECK (valid_to IS NULL OR valid_to > valid_from),
+    CONSTRAINT ck_price_version_current_is_open
+        CHECK (is_current = (valid_to IS NULL)),
     UNIQUE (sku_bk, price_scope_id, scope_bk, valid_from)
 );
 

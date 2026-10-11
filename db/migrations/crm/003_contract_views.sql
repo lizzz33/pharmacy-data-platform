@@ -18,7 +18,7 @@ SELECT c.customer_bk,
        c.sex,
        cp.city,
        cp.region,
-       CASE WHEN ll.deleted_at IS NULL THEN ll.level_name END AS loyalty_level,
+       ll.level_name AS loyalty_level,
        COALESCE(m.marketing_opt_in, false) AS marketing_opt_in,
        c.registered_at,
        GREATEST(

@@ -58,7 +58,7 @@ END;
 $$;
 
 CREATE TRIGGER trg_movement_apply_stock
-    BEFORE INSERT ON movement FOR EACH ROW
+    AFTER INSERT ON movement FOR EACH ROW
     EXECUTE FUNCTION apply_movement_to_stock();
 
 CREATE FUNCTION reject_movement_mutation()

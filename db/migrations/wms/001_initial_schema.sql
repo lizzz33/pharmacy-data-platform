@@ -17,7 +17,9 @@ CREATE TABLE supplier (
     is_active boolean NOT NULL,
     deleted_at timestamptz,
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+    updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    CONSTRAINT ck_supplier_deleted_inactive
+        CHECK (deleted_at IS NULL OR NOT is_active)
 );
 
 CREATE TABLE distribution_center (
@@ -28,7 +30,9 @@ CREATE TABLE distribution_center (
     is_active boolean NOT NULL,
     deleted_at timestamptz,
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+    updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+    CONSTRAINT ck_distribution_center_deleted_inactive
+        CHECK (deleted_at IS NULL OR NOT is_active)
 );
 
 CREATE TABLE purchase_order (
@@ -55,8 +59,9 @@ CREATE TABLE batch (
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     UNIQUE (sku, series_no),
+    UNIQUE (batch_bk, sku),
     CHECK (expiry_date > manufactured_date),
-    CHECK (expiry_date >= received_at::date)
+    CHECK (expiry_date >= (received_at AT TIME ZONE 'UTC')::date)
 );
 
 CREATE INDEX ix_batch_sku ON batch (sku);
@@ -66,13 +71,15 @@ CREATE TABLE purchase_line (
     purchase_bk text NOT NULL REFERENCES purchase_order (purchase_bk),
     line_no integer NOT NULL CHECK (line_no > 0),
     sku text NOT NULL,
-    batch_bk text REFERENCES batch (batch_bk),
+    batch_bk text,
     quantity numeric(18, 3) NOT NULL CHECK (quantity > 0),
     unit_cost numeric(18, 2) NOT NULL CHECK (unit_cost >= 0),
     currency text NOT NULL CHECK (currency ~ '^[A-Z]{3}$'),
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    PRIMARY KEY (purchase_bk, line_no)
+    PRIMARY KEY (purchase_bk, line_no),
+    CONSTRAINT fk_purchase_line_batch_sku
+        FOREIGN KEY (batch_bk, sku) REFERENCES batch (batch_bk, sku)
 );
 
 CREATE INDEX ix_purchase_line_sku ON purchase_line (sku);

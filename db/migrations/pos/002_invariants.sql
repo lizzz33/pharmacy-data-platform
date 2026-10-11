@@ -116,7 +116,7 @@ BEGIN
         SELECT 1 FROM receipt r JOIN receipt_line rl USING (receipt_bk)
          WHERE r.receipt_bk = target_receipt_bk
            AND r.doc_type = 'sale'
-           AND r.receipt_dt::date > rl.batch_expiry_date_snapshot
+           AND (r.receipt_dt AT TIME ZONE 'UTC')::date > rl.batch_expiry_date_snapshot
     ) THEN
         RAISE EXCEPTION 'receipt % sells an expired batch', target_receipt_bk
             USING ERRCODE = 'P0001';
@@ -194,16 +194,16 @@ $$;
 CREATE FUNCTION check_refund_limit()
 RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE
-    target_bk text;
+    changed_bk text;
+    refund_bk text;
 BEGIN
-    target_bk := CASE WHEN TG_TABLE_NAME = 'receipt'
-                      THEN COALESCE(NEW.receipt_bk, OLD.receipt_bk)
-                      ELSE COALESCE(NEW.receipt_bk, OLD.receipt_bk) END;
-    PERFORM assert_refund_limit(target_bk);
-    IF TG_TABLE_NAME = 'receipt' THEN
-        FOR target_bk IN SELECT receipt_bk FROM receipt WHERE parent_receipt_bk = COALESCE(NEW.receipt_bk, OLD.receipt_bk)
-        LOOP PERFORM assert_refund_limit(target_bk); END LOOP;
-    END IF;
+    FOREACH changed_bk IN ARRAY ARRAY[NEW.receipt_bk, OLD.receipt_bk]
+    LOOP
+        CONTINUE WHEN changed_bk IS NULL;
+        PERFORM assert_refund_limit(changed_bk);
+        FOR refund_bk IN SELECT receipt_bk FROM receipt WHERE parent_receipt_bk = changed_bk
+        LOOP PERFORM assert_refund_limit(refund_bk); END LOOP;
+    END LOOP;
     RETURN NULL;
 END;
 $$;

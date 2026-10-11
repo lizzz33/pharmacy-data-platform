@@ -160,6 +160,8 @@ docker compose up -d --wait
 
 Позже можно решить, нужен ли отдельный migration runner. Пока для учебного стенда clean recreation достаточно.
 
+Healthcheck ходит по TCP (`pg_isready -h 127.0.0.1`) и читает `contract.v_receipt` в `pos_service_db` — эта база мигрируется последней. Пока выполняется `docker-entrypoint-initdb.d`, временный сервер слушает только unix-сокет, поэтому проверка через сокет отвечает «готово» до конца миграций, а TCP открывается только после init. `start_period: 60s` даёт время на инициализацию.
+
 ---
 
 # 3. Что такое tests/invariants
@@ -191,6 +193,11 @@ I10 -> пытаемся продать Rx без prescription
 ```
 
 Именно SQLSTATE ошибки потом указывается в submission manifest.
+
+Курсовой checker `hws_descriptions/hw1/hw01_check.py` запускает эти тесты на заполненном стенде, после seed. Поэтому:
+
+- справочные строки (`sku_category`, `price_scope`, `contact_type`, …) тест вставляет через `ON CONFLICT DO NOTHING` и берёт id через `SELECT` — seed их уже создал;
+- негативный тест должен падать на проверяемом ограничении, а не на подготовке данных: одинаковый SQLSTATE `23505` от дубля справочника засчитал бы I6, хотя `ux_sku_version_current` не сработал.
 
 ## scripts/test_invariants.sh
 
@@ -306,9 +313,11 @@ batch_expiry_date_snapshot
 
 Это позволяет POS самостоятельно проверить invariant без запроса в WMS.
 
+Дата чека берётся в UTC (`receipt_dt AT TIME ZONE 'UTC'`), чтобы проверка не зависела от `TimeZone` сессии.
+
 ### I9 — нельзя принять expired batch
 
-WMS CHECK по `expiry_date` и `received_at`.
+WMS CHECK по `expiry_date` и `received_at`; дата приёмки тоже в UTC.
 
 ### I10 — Rx без prescription
 
@@ -332,6 +341,8 @@ parent_receipt_bk -> исходный sale
 Его собственные receipt lines показывают, что именно вернули.
 
 Проверяется cumulative returned quantity по SKU с учётом предыдущих refunds.
+
+Правка самой продажи (чека или строк) тоже перепроверяет все её возвраты.
 
 ### I12 — payments = receipt total
 
@@ -532,6 +543,13 @@ tests/contracts/
 
 Fixtures выполняются внутри transaction и откатываются.
 
+Fixtures тоже должны работать на заполненной базе:
+
+- справочники по имени (`otc`, `chain`, `gold`, `email`, `marketing`) — через `ON CONFLICT DO NOTHING`;
+- строки со своим BK и уникальным именем (`drug_form`, `manufacturer`) — с именем, которого нет в seed (`'Contract Form'`, `'Contract Manufacturer'`). `ON CONFLICT` здесь не подходит: при конфликте по имени строка с BK фикстуры не появится, и следующий FK на этот BK упадёт.
+
+`test_contracts.rb` останавливается на первой ошибке. Если упадёт CRM, каталог, кассы, склад и C01–C23 не проверятся вовсе.
+
 Это **не seed generator**.
 
 ---
@@ -569,6 +587,8 @@ docker compose up -d --wait
 ```text
 C01–C23 = 0 violations
 ```
+
+`test_invariants.sh` и `test_contracts.sh` проходят и на базе, где справочники уже есть (`otc`, `chain`, `tablet`, `gold`, `email`, `marketing`) и часть из них soft-deleted, — так будет после seed. Официальный checker (`--sections contract,keys,dq,inv`): контракт 4/4, инварианты 5/5.
 
 ---
 
@@ -659,30 +679,36 @@ batch_expiry_date_snapshot
 
 ---
 
-# 11. Известное наблюдение, которое пока не блокирует работу
+# 11. Soft delete справочников
 
-Soft delete обычных справочников ещё требует окончательного осмысления для historical analytics.
+Фильтр `deleted_at IS NULL` в contract-views ломает C07/C08 и X01/X03/X06, как только удаляется аптека, SKU или справочник с историей: чеки, закупки и партии ссылаются на них и после удаления.
 
-Например сейчас:
+Поэтому soft-deleted аптеки, SKU, поставщики и РЦ остаются в `contract.*`, статус виден через `is_active`; удалённая запись обязана быть неактивной (`CHECK (deleted_at IS NULL OR NOT is_active)`). Удалённые значения справочников (производитель, категория, форма, МНН, уровень лояльности) тоже показываются. Из контракта по soft delete исчезает только клиент — этого требует контракт.
 
-```text
-contract.v_pharmacy
-WHERE deleted_at IS NULL
-```
-
-а `v_receipt` получает pharmacy через JOIN на текущую pharmacy.
-
-Теоретически после soft delete pharmacy исторические receipts могут исчезнуть из contract view.
-
-Для customer это намеренно по заданию.
-
-Для pharmacy/supplier/DC это не так явно.
-
-Пока checker и текущая модель это не ломают, поэтому не переделываем сейчас. Вернёмся к вопросу при seed / DWH mapping, если он станет практически значимым.
+Следствие для seed: X04 сверяет `v_receipt.customer_bk` с `v_customer`, поэтому генератор soft-удаляет только клиентов без чеков, а `seed_delta` не продаёт удалённым клиентам.
 
 ---
 
-# 12. Артефакты задач Codex
+# 12. Исправления схемы и тестов 2026-10-11
+
+Ветка `bugfix/hw1-review-fixes`. Сделано:
+
+- тесты I5/I6/P2 и contract-фикстуры catalog/crm вставляют справочники через `ON CONFLICT DO NOTHING` или с уникальными для фикстуры именами — проходят на заполненной базе;
+- `price_version`: `CHECK (is_current = (valid_to IS NULL))` (C11);
+- триггер `movement → stock` — `AFTER INSERT`: повторная вставка с `ON CONFLICT DO NOTHING` не меняет остаток;
+- soft delete справочников не прячет строки из контракта (§11);
+- healthcheck через TCP + запрос к `contract.v_receipt` в `pos_service_db`, `start_period`;
+- I8/I9 считают дату в UTC, а не в `TimeZone` сессии;
+- составной FK `purchase_line (batch_bk, sku) → batch`;
+- I11: правка строк продажи перепроверяет её возвраты;
+- удалённая аптека / SKU / поставщик / РЦ обязана быть неактивной: `CHECK (deleted_at IS NULL OR NOT is_active)`;
+- удалённые значения справочников показываются в contract-views по одному правилу (§11).
+
+Ещё не сделано: чек вне смены / перекрытие смен, приёмка просрочки движением, свои SQLSTATE для I3/I8/I10–I12, комментарии в тестах, I7 «приняли 5 — списали 10», I1 на контрактной сущности (`sku` / `customer`), единый автор коммитов для бонуса solo, перенос `db/migrations` в `migrations/` в корне перед сдачей (так требует README курса). Остальное — по §14 ниже (seed, docs, CDC, реплика, PgBouncer, манифест, Patroni).
+
+---
+
+# 12a. Артефакты задач Codex
 
 Каждая существенная repository task хранится отдельно:
 

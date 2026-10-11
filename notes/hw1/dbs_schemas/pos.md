@@ -257,8 +257,10 @@ batch_expiry_date_snapshot
 и DB constraint trigger проверяет:
 
 ```text
-receipt.receipt_dt::date <= receipt_line.batch_expiry_date_snapshot
+(receipt.receipt_dt AT TIME ZONE 'UTC')::date <= receipt_line.batch_expiry_date_snapshot
 ```
+
+Дата чека берётся в UTC, а не в `TimeZone` сессии: иначе один и тот же чек принимается в одной сессии и отклоняется в другой. Так же дату чека считает checker в X07.
 
 Это дополнительное физическое поле не входит в contract view.
 
@@ -328,6 +330,8 @@ I11 реализуется constraint trigger.
 - считаем количество проданного SKU;
 - вычитаем уже оформленные возвраты;
 - новый возврат не может превышать остаток доступного к возврату количества.
+
+Проверка срабатывает не только на изменение возврата, но и на изменение самой продажи (чека и его строк): после правки продажи перепроверяются все её возвраты. Иначе можно оформить возврат, а потом уменьшить количество в продаже.
 
 ## 3. Документ оформляется на открытой смене конкретной кассы
 
@@ -438,7 +442,9 @@ SUM(payment.amount) = receipt.total_amount
 - `is_active`;
 - `updated_at`.
 
-Soft-deleted pharmacy в view не отдаём.
+Soft delete справочника не скрывает сущность из контракта: на неё ссылается история (чеки, закупки, перемещения). С фильтром `deleted_at IS NULL` удаление аптеки или SKU с историей ломает C07/C08, X01/X03/X06. Статус виден через `is_active`; `CHECK (deleted_at IS NULL OR NOT is_active)` (`ck_<table>_deleted_inactive`) не даёт удалённой записи остаться активной. Из контракта по soft delete исчезает только клиент — этого требует контракт.
+
+Soft-deleted pharmacy остаётся в view.
 
 ## `contract.v_receipt`
 

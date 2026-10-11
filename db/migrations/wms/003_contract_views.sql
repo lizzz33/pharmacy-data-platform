@@ -8,8 +8,7 @@ SELECT supplier_bk,
        country,
        is_active,
        updated_at
-  FROM supplier
- WHERE deleted_at IS NULL;
+  FROM supplier;
 
 CREATE VIEW contract.v_distribution_center AS
 SELECT dc_bk,
@@ -18,8 +17,7 @@ SELECT dc_bk,
        city,
        is_active,
        updated_at
-  FROM distribution_center
- WHERE deleted_at IS NULL;
+  FROM distribution_center;
 
 CREATE VIEW contract.v_batch AS
 SELECT batch_bk,

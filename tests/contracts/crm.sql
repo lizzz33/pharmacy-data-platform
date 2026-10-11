@@ -1,6 +1,9 @@
-INSERT INTO loyalty_level (level_name) VALUES ('gold');
-INSERT INTO contact_type (type_name) VALUES ('email');
-INSERT INTO consent_type (type_name) VALUES ('marketing');
+INSERT INTO loyalty_level (level_name) VALUES ('gold')
+    ON CONFLICT DO NOTHING;
+INSERT INTO contact_type (type_name) VALUES ('email')
+    ON CONFLICT DO NOTHING;
+INSERT INTO consent_type (type_name) VALUES ('marketing')
+    ON CONFLICT DO NOTHING;
 INSERT INTO customer (customer_bk, birth_year, sex, registered_at)
 VALUES ('CUSTOMER-CONTRACT', 1990, 'F', '2025-01-01 10:00+00');
 INSERT INTO customer_profile_version

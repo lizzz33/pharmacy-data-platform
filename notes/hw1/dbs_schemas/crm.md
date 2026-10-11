@@ -208,7 +208,10 @@ marketing_opt_in = true
 ```text
 consent_type.type_name = 'marketing'
 AND consent.revoked_at IS NULL
+AND consent_type.deleted_at IS NULL
 ```
+
+Удалённый тип согласия даёт `marketing_opt_in = false`. Это не скрытие значения справочника (их `v_customer` показывает и после удаления, например `loyalty_level`), а смысл согласия: согласие несуществующего типа не действует.
 
 ---
 
@@ -376,6 +379,7 @@ WHERE revoked_at IS NULL
 - физическая строка клиента остаётся;
 - при soft delete все `customer_contact.contact_value` обнуляются или обезличиваются;
 - `contract.v_customer` содержит фильтр `customer.deleted_at IS NULL`;
+- удалённый уровень лояльности показывается в `loyalty_level` как есть — то же правило, что для справочников в `v_sku`;
 - исторические связи по `customer_bk` остаются валидными;
 - контакты отдельно не историзируем, чтобы после обезличивания старые PII не оставались в history.
 

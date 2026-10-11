@@ -22,7 +22,9 @@ CREATE TABLE pharmacy (
     deleted_at timestamptz,
     created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
     updated_at timestamptz NOT NULL DEFAULT clock_timestamp(),
-    CHECK (closed_at IS NULL OR closed_at >= opened_at)
+    CHECK (closed_at IS NULL OR closed_at >= opened_at),
+    CONSTRAINT ck_pharmacy_deleted_inactive
+        CHECK (deleted_at IS NULL OR NOT is_active)
 );
 
 CREATE TABLE cash_register (

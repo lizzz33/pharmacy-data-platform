@@ -1,5 +1,6 @@
 INSERT INTO customer (customer_bk, registered_at) VALUES ('CUSTOMER-P02', clock_timestamp());
-INSERT INTO contact_type (type_name) VALUES ('email');
+INSERT INTO contact_type (type_name) VALUES ('email')
+    ON CONFLICT DO NOTHING;
 INSERT INTO customer_contact (contact_bk, customer_bk, contact_type_id, contact_value)
 SELECT 'CONTACT-P02', 'CUSTOMER-P02', id, 'person@example.test'
 FROM contact_type WHERE type_name = 'email';

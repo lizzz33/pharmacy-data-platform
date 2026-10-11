@@ -1,11 +1,13 @@
 INSERT INTO manufacturer (manufacturer_bk, manufacturer_name)
 VALUES ('MFR-CONTRACT', 'Contract Manufacturer');
 INSERT INTO drug_form (drug_form_bk, drug_form_name)
-VALUES ('FORM-CONTRACT', 'tablet');
+VALUES ('FORM-CONTRACT', 'Contract Form');
 INSERT INTO active_ingredient (ingredient_bk, inn_name)
 VALUES ('ING-CONTRACT-B', 'Ingredient B'), ('ING-CONTRACT-A', 'Ingredient A');
-INSERT INTO sku_category (category_name) VALUES ('otc');
-INSERT INTO price_scope (scope_name) VALUES ('chain');
+INSERT INTO sku_category (category_name) VALUES ('otc')
+    ON CONFLICT DO NOTHING;
+INSERT INTO price_scope (scope_name) VALUES ('chain')
+    ON CONFLICT DO NOTHING;
 INSERT INTO sku
 (sku_bk, manufacturer_bk, drug_form_bk, pack_qty, is_vital, is_active)
 VALUES ('SKU-CONTRACT', 'MFR-CONTRACT', 'FORM-CONTRACT', 20, true, true);
@@ -25,12 +27,12 @@ SELECT 'SMOKE:catalog_sku', count(*)
  WHERE sku = 'SKU-CONTRACT' AND sku_name = 'Contract SKU'
    AND inn_name = 'Ingredient A, Ingredient B'
    AND manufacturer_name = 'Contract Manufacturer'
-   AND drug_form = 'tablet' AND category = 'otc' AND NOT is_rx;
+   AND drug_form = 'Contract Form' AND category = 'otc' AND NOT is_rx;
 UPDATE active_ingredient SET deleted_at = clock_timestamp()
  WHERE ingredient_bk = 'ING-CONTRACT-B';
 SELECT 'SMOKE:catalog_deleted_ingredient', count(*)
   FROM contract.v_sku
- WHERE sku = 'SKU-CONTRACT' AND inn_name = 'Ingredient A'
+ WHERE sku = 'SKU-CONTRACT' AND inn_name = 'Ingredient A, Ingredient B'
    AND updated_at = (SELECT updated_at FROM active_ingredient
                       WHERE ingredient_bk = 'ING-CONTRACT-B');
 SELECT 'SMOKE:catalog_price', count(*)

@@ -187,7 +187,7 @@ WMS должен отдать шесть представлений:
 - `purchase_bk TEXT NOT NULL` — FK → `purchase_order.purchase_bk`;
 - `line_no INT NOT NULL`;
 - `sku TEXT NOT NULL` — логическая cross-service ссылка на Catalog;
-- `batch_bk TEXT NULL` — FK → `batch.batch_bk`, появляется после приёмки;
+- `batch_bk TEXT NULL` — появляется после приёмки;
 - `quantity NUMERIC(...) NOT NULL`;
 - `unit_cost NUMERIC(..., 2) NOT NULL`;
 - `currency TEXT NOT NULL`;
@@ -205,7 +205,8 @@ PRIMARY KEY:
 - `line_no > 0`;
 - `quantity > 0`;
 - `unit_cost >= 0`;
-- валюта — трёхбуквенный код ISO 4217 в верхнем регистре.
+- валюта — трёхбуквенный код ISO 4217 в верхнем регистре;
+- `fk_purchase_line_batch_sku`: `(batch_bk, sku)` → `batch (batch_bk, sku)`. Принятая партия обязана быть того же SKU, что строка закупки; обе колонки в одной БД, поэтому это проверяет сама база. Для ссылки в `batch` есть `UNIQUE (batch_bk, sku)`. Пока `batch_bk IS NULL` (строка не принята), FK не проверяется.
 
 `supplier_bk`, `dc_bk` и `ordered_at` не дублируем физически в строке: они берутся из `purchase_order` при построении contract view.
 
@@ -235,7 +236,7 @@ PRIMARY KEY:
 - `batch_bk` уникален и неизменяем;
 - `UNIQUE (sku, series_no)`;
 - `expiry_date > manufactured_date`;
-- при создании/приёмке партии `expiry_date` не должна быть раньше момента приёмки.
+- при создании/приёмке партии `expiry_date` не должна быть раньше момента приёмки: `expiry_date >= (received_at AT TIME ZONE 'UTC')::date`. Дата приёмки берётся в UTC, чтобы результат не зависел от `TimeZone` сессии.
 
 Важно: для `sku` здесь нет FOREIGN KEY, потому что Catalog — другая БД. Целостность проверяется генератором и cross-service checker.
 
@@ -436,7 +437,9 @@ README и I7 требуют физически не допустить отри�
 - `is_active`;
 - `updated_at`.
 
-Soft-deleted supplier в контракт не отдаём.
+Soft-deleted supplier остаётся в контракте.
+
+Soft delete справочника не скрывает сущность из контракта: на неё ссылается история (чеки, закупки, перемещения). С фильтром `deleted_at IS NULL` удаление аптеки или SKU с историей ломает C07/C08, X01/X03/X06. Статус виден через `is_active`; `CHECK (deleted_at IS NULL OR NOT is_active)` (`ck_<table>_deleted_inactive`) не даёт удалённой записи остаться активной. Из контракта по soft delete исчезает только клиент — этого требует контракт.
 
 ## `contract.v_distribution_center`
 
@@ -449,7 +452,7 @@ Soft-deleted supplier в контракт не отдаём.
 - `is_active`;
 - `updated_at`.
 
-Soft-deleted DC в контракт не отдаём.
+Soft-deleted DC остаётся в контракте.
 
 ## `contract.v_batch`
 
@@ -544,6 +547,7 @@ Cross-service checker дополнительно проверяет:
 2. **`movement` — журнал изменений, `stock` — материализованное текущее состояние.**
    Запись movement и изменение stock должны выполняться атомарно средствами БД в одной транзакции. Предпочтительный вариант — DB function/trigger, чтобы приложение не могло записать movement и забыть обновить stock.
    `movement` после вставки считаем неизменяемым: UPDATE/DELETE запрещены, а исправление бизнес-факта оформляется компенсирующим movement. Это не позволяет журналу и materialized stock разъехаться.
+   Триггер — `AFTER INSERT`: `BEFORE INSERT` срабатывает до разрешения `ON CONFLICT`, и идемпотентная повторная вставка того же movement меняет stock, хотя строка не вставляется.
 
 3. **Отдельный справочник `movement_type` не вводим.**
    Набор фиксирован контрактом и удобно защищается CHECK:

@@ -325,7 +325,7 @@ string_agg(inn_name, ', ' ORDER BY inn_name)
 - `valid_to > valid_from`, если `valid_to IS NOT NULL`;
 - интервалы одной комбинации `(sku_bk, price_scope_id, scope_bk)` не пересекаются;
 - только одна текущая версия на одну комбинацию;
-- `is_current` согласован с `valid_to`: `CHECK (is_current = (valid_to IS NULL))`. Текущая версия — ровно открытая; C11 детерминирован и не зависит от `now()`.
+- согласованность `is_current` с `valid_to` проверяет C11: текущая версия не может завершаться в прошлом или настоящем, а нетекущая версия обязана иметь `valid_to`. Текущая версия может иметь будущий `valid_to`, поэтому равенство `is_current = (valid_to IS NULL)` не навязывается.
 
 ### I5 — непересекающиеся интервалы
 
@@ -416,7 +416,7 @@ JOIN текущей `sku_version` с `sku`, `manufacturer`, `drug_form`, `active
 Soft delete справочника не скрывает сущность из контракта: на неё ссылается история (чеки, закупки, партии, цены). С фильтром `deleted_at IS NULL` удаление аптеки или SKU с историей ломает C07/C08, X01/X03/X06. Статус виден через `is_active`; `CHECK (deleted_at IS NULL OR NOT is_active)` (`ck_<table>_deleted_inactive`) не даёт удалённой записи остаться активной. Из контракта по soft delete исчезает только клиент — этого требует контракт.
 Удалённые производитель, категория, лекарственная форма и МНН тоже показываются в атрибутах `v_sku` — правило одно для всех. Скрывать их выборочно нельзя: `manufacturer_name` и `category` в контракте `NOT NULL`.
 
-Soft-deleted SKU в view не отдаём.
+Soft-deleted SKU остаются в `contract.v_sku` для исторической согласованности; их неактивный статус виден через `is_active = false`.
 
 ## `contract.v_price`
 

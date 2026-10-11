@@ -1,15 +1,18 @@
 team:
   members:
-    - "TODO"
+    - "Дмитрий Каневский"
+    - "Елизавета Бичурина"
+    - "Кауров Александр"
   github_logins:
-    - "TODO"
-  solo: true
+    - "sblenlkj"
+    - "lizzz33"
+  solo: false
 
 entrypoint:
   up: "docker compose up -d"
   wait_ready: "docker compose up -d --wait"
-  seed: ""
-  seed_delta: ""
+  seed: "./scripts/seed.sh --seed 42"
+  seed_delta: "./scripts/seed.sh --seed 43 --delta"
   down: "docker compose down -v"
 
 connections:

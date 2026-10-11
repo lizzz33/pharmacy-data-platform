@@ -53,7 +53,7 @@ WMS      -> wms_service_db
 
 # 2. Где мы находимся сейчас
 
-На текущий момент завершены первые три больших слоя:
+На текущий момент завершены основные слои модели и данных:
 
 ```text
 Domain design
@@ -63,9 +63,13 @@ Physical PostgreSQL schema
 DB invariants I1–I12
       ↓
 contract.* views + C01–C23
+      ↓
+assignment-scale seed
+      ↓
+volume + X01–X10 + realism
 ```
 
-То есть основная логическая модель источников уже практически собрана.
+То есть schema/contract/invariants/data уже стабилизированы официальным checker; дальше остаются документация и инфраструктурные части.
 
 ## Уже сделано
 
@@ -694,7 +698,7 @@ batch_expiry_date_snapshot
 Ветка `bugfix/hw1-review-fixes`. Сделано:
 
 - тесты I5/I6/P2 и contract-фикстуры catalog/crm вставляют справочники через `ON CONFLICT DO NOTHING` или с уникальными для фикстуры именами — проходят на заполненной базе;
-- `price_version`: `CHECK (is_current = (valid_to IS NULL))` (C11);
+- C11 уточнён после PR: current price может иметь будущий non-NULL `valid_to`; строгий `CHECK (is_current = (valid_to IS NULL))` был удалён;
 - триггер `movement → stock` — `AFTER INSERT`: повторная вставка с `ON CONFLICT DO NOTHING` не меняет остаток;
 - soft delete справочников не прячет строки из контракта (§11);
 - healthcheck через TCP + запрос к `contract.v_receipt` в `pos_service_db`, `start_period`;
@@ -704,7 +708,7 @@ batch_expiry_date_snapshot
 - удалённая аптека / SKU / поставщик / РЦ обязана быть неактивной: `CHECK (deleted_at IS NULL OR NOT is_active)`;
 - удалённые значения справочников показываются в contract-views по одному правилу (§11).
 
-Ещё не сделано: чек вне смены / перекрытие смен, приёмка просрочки движением, свои SQLSTATE для I3/I8/I10–I12, комментарии в тестах, I7 «приняли 5 — списали 10», I1 на контрактной сущности (`sku` / `customer`), единый автор коммитов для бонуса solo, перенос `db/migrations` в `migrations/` в корне перед сдачей (так требует README курса). Остальное — по §14 ниже (seed, docs, CDC, реплика, PgBouncer, манифест, Patroni).
+Необязательные edge cases и вопросы, которые не блокируют текущий checker, вынесены в `notes/hw1/open_questions.md`: чек вне смены / перекрытие смен, приёмка просрочки движением, более специфичные SQLSTATE, усиленный сценарий I7, I1 на более центральной сущности и несколько документационных допущений. Отдельно проверено: основное условие не требует переносить `db/migrations` в корневой `migrations/`, поэтому текущую структуру пока сохраняем.
 
 ---
 
@@ -732,67 +736,25 @@ Report = что фактически сделал и чем проверил.
 
 ---
 
-# 13. Что ещё НЕ сделано
+# 13. Что ещё НЕ сделано после закрытия data/seed части
 
 Теперь начинается следующая большая половина HW1.
 
-## A. Финальный seed generator
+## A. Data / seed — закрыто ✅
 
-Нужно:
+Реализованы `scripts/seed.sh` и `src/pharmacy_dwh/seed/`.
 
-```text
-scripts/seed.sh
-+
-Python code в src/pharmacy_dwh
-```
+Base seed и delta seed детерминированы, идемпотентны, покрывают 18 месяцев и проходят официальные проверки volume/cross/realism.
 
-Требования:
-
-- deterministic: одинаковый `--seed N` -> одинаковые данные;
-- idempotent при повторном запуске;
-- умеет догенерировать новые данные;
-- cross-service consistency;
-- минимум 12 месяцев history;
-- последний месяц current;
-- required minimum row counts.
-
-Минимальные объёмы из README:
+Подробный отчёт:
 
 ```text
-customers             >= 2 000
-loyalty cards         >= 1 500
-SKU                   >=   500
-price versions        >= 1 500
-pharmacies            >=    30
-batches               >= 3 000
-receipts              >=20 000
-receipt lines         >=60 000
-payments              >=20 000
-purchase lines        >= 5 000
-movements             >=20 000
-stock rows            >= 5 000
-suppliers             >=    10
-distribution centers  >=     3
+.artifacts/reports/005-seed-generator-report.md
 ```
 
-Это ближайший крупный технический этап.
+## B. Cross-service checks X01–X10 — закрыто ✅
 
-## B. Cross-service checks X01–X10
-
-После seed нужно проверять настоящую согласованность между DB:
-
-- sold SKU exists in Catalog;
-- purchased SKU exists in Catalog;
-- batch SKU exists in Catalog;
-- receipt customer exists in CRM;
-- receipt batch exists in WMS;
-- movement pharmacy exists in POS;
-- expired batch not sold;
-- valid price existed at sale time;
-- receipt SKU == batch SKU;
-- Rx snapshot consistency.
-
-Эти проверки делает преподавательский checker уже через разные databases.
+Официальный checker проходит X01–X10 10/10 на assignment-scale seed.
 
 ## C. ER diagrams в docs/erd
 
@@ -921,9 +883,19 @@ docs/failover_journal.md
 
 Теперь последовательность немного меняется по сравнению с первоначальным plan.
 
-## Этап 4 — Seed generator
+## Этап 4 — Seed generator ✅
 
-Сначала сделать большой согласованный dataset.
+Реализован детерминированный генератор большого согласованного dataset:
+
+```text
+scripts/seed.sh
+src/pharmacy_dwh/seed/
+```
+
+Base seed и append/delta seed используют отдельные namespace business keys,
+повторный запуск каждого режима идемпотентен. Данные покрывают 18 месяцев,
+WMS stock строится trigger-ом только из movements, POS использует реальные
+Catalog SKU и WMS batches.
 
 Почему сейчас:
 
@@ -932,14 +904,18 @@ docs/failover_journal.md
 - contract готов;
 - seed сразу начнёт находить реальные проблемы модели.
 
-После seed обязательно прогнать:
+После seed прогнаны:
 
 ```text
 I1–I12
 C01–C23
 X01–X10
 volume checks
+realism checks
 ```
+
+Результат official checker: contract 14/14, keys 27/27, volume 14/14,
+C01–C23 23/23, X01–X10 10/10, invariants 15/15, realism 5/5.
 
 ## Этап 5 — ERD + ADR + DWH mapping
 
@@ -971,27 +947,17 @@ volume checks
 
 # 15. Ближайший следующий шаг
 
-Следующий крупный task для Codex должен быть:
+Следующему участнику команды передаём:
 
 ```text
-deterministic cross-service seed generator
+1. ERD + ADR + DWH mapping
+2. CDC readiness
+3. async replica + PgBouncer
+4. final submission manifest + full checker
+5. Patroni / HA / bonuses — если идём дальше
 ```
 
-Но перед запуском стоит отдельно 10–15 минут обсудить стратегию генерации.
-
-Нам надо решить:
-
-- в каком порядке генерируются сервисы;
-- как гарантировать одинаковые BK между DB;
-- как строить 12 месяцев истории;
-- как генерировать movements так, чтобы stock всегда был валиден;
-- как связать POS sale с реально существующим WMS batch;
-- как выбирать действующую на дату продажи price;
-- как делать refunds;
-- сколько данных генерировать за один batch;
-- как реализовать idempotency и append.
-
-После этого можно оформить task 004 для Codex.
+Необязательные edge cases собраны в `notes/hw1/open_questions.md` и не должны тормозить основную работу.
 
 ---
 
@@ -1039,5 +1005,8 @@ docker compose ps
 - contract shape validation;
 - C01–C23;
 - P1/P2.
+- assignment-scale deterministic seed;
+- idempotent append/delta seed;
+- volume, X01–X10 и realism 5/5.
 
-Следующая сессия начинается с **проектирования seed generator**, а не с возврата к таблицам с нуля.
+Следующая сессия начинается с **ERD / ADR / DWH mapping**, затем CDC, async replica + PgBouncer, финальный manifest/checker и при необходимости Patroni/HA. Открытые необязательные edge cases вынесены отдельно в `notes/hw1/open_questions.md`.

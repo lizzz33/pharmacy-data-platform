@@ -1,0 +1,57 @@
+team:
+  members:
+    - "Дмитрий Каневский"
+    - "Елизавета Бичурина"
+    - "Кауров Александр"
+  github_logins:
+    - "sblenlkj"
+    - "lizzz33"
+  solo: false
+
+entrypoint:
+  up: "docker compose up -d"
+  wait_ready: "docker compose up -d --wait"
+  seed: "./scripts/seed.sh --seed 42"
+  seed_delta: "./scripts/seed.sh --seed 43 --delta"
+  down: "docker compose down -v"
+
+connections:
+  master:
+    crm:     "postgresql://pharmacy:pharmacy@localhost:5432/crm_service_db"
+    catalog: "postgresql://pharmacy:pharmacy@localhost:5432/catalog_service_db"
+    pos:     "postgresql://pharmacy:pharmacy@localhost:5432/pos_service_db"
+    wms:     "postgresql://pharmacy:pharmacy@localhost:5432/wms_service_db"
+
+  writer:
+    crm:     "postgresql://pharmacy:pharmacy@localhost:5432/crm_service_db"
+    catalog: "postgresql://pharmacy:pharmacy@localhost:5432/catalog_service_db"
+    pos:     "postgresql://pharmacy:pharmacy@localhost:5432/pos_service_db"
+    wms:     "postgresql://pharmacy:pharmacy@localhost:5432/wms_service_db"
+
+invariants:
+  I1:  {service: catalog, file: "tests/invariants/I01_business_key_unique.sql",       expect_sqlstate: "23505"}
+  I2:  {service: catalog, file: "tests/invariants/I02_business_key_immutable.sql",    expect_sqlstate: "P0001"}
+  I3:  {service: pos,     file: "tests/invariants/I03_receipt_total.sql",              expect_sqlstate: "P0001"}
+  I4:  {service: pos,     file: "tests/invariants/I04_receipt_line_arithmetic.sql",    expect_sqlstate: "23514"}
+  I5:  {service: catalog, file: "tests/invariants/I05_price_interval_overlap.sql",     expect_sqlstate: "23P01"}
+  I6:  {service: catalog, file: "tests/invariants/I06_single_current_version.sql",     expect_sqlstate: "23505"}
+  I7:  {service: wms,     file: "tests/invariants/I07_stock_non_negative.sql",         expect_sqlstate: "23514"}
+  I8:  {service: pos,     file: "tests/invariants/I08_expired_batch_sale.sql",         expect_sqlstate: "P0001"}
+  I9:  {service: wms,     file: "tests/invariants/I09_expired_batch_receipt.sql",      expect_sqlstate: "23514"}
+  I10: {service: pos,     file: "tests/invariants/I10_rx_without_prescription.sql",    expect_sqlstate: "P0001"}
+  I11: {service: pos,     file: "tests/invariants/I11_refund_exceeds_sale.sql",        expect_sqlstate: "P0001"}
+  I12: {service: pos,     file: "tests/invariants/I12_payment_total.sql",              expect_sqlstate: "P0001"}
+
+positive_tests:
+  P1: {service: catalog, file: "tests/invariants/P01_updated_at.sql"}
+  P2: {service: crm,     file: "tests/invariants/P02_customer_soft_delete.sql"}
+
+ha:
+  mode: "none"
+
+docs:
+  readme: "README.md"
+  erd: "docs/erd/"
+  adr: "docs/adr/"
+  dwh_mapping: "docs/dwh_mapping.md"
+  sources_log: "docs/sources.md"

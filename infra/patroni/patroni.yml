@@ -1,0 +1,63 @@
+scope: pharmacy-hw1
+namespace: /pharmacy/
+
+restapi:
+  listen: 0.0.0.0:8008
+  # name/connect_address and credentials come from PATRONI_* environment variables.
+
+etcd3:
+  hosts: [etcd1:2379, etcd2:2379, etcd3:2379]
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    check_timeline: true
+    synchronous_mode: false
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: logical
+        max_wal_senders: 10
+        max_replication_slots: 10
+        wal_keep_size: 256MB
+        max_slot_wal_keep_size: 2GB
+        hot_standby: 'on'
+        wal_log_hints: 'on'
+        password_encryption: scram-sha-256
+        max_connections: 200
+        shared_buffers: 128MB
+        timezone: UTC
+        datestyle: ISO, YMD
+        extra_float_digits: 3
+  initdb:
+    - encoding: UTF8
+    - locale: C.UTF-8
+    - data-checksums
+  # No domain migrations in post_init: the db-init service runs them on the leader.
+
+postgresql:
+  listen: 0.0.0.0:5432
+  data_dir: /var/lib/postgresql/data/pgdata
+  bin_dir: /usr/lib/postgresql/16/bin
+  pgpass: /tmp/patroni.pgpass
+  authentication:
+    superuser:
+      username: postgres
+    replication:
+      username: replicator
+  pg_hba:
+    - local all all peer
+    - host replication replicator 0.0.0.0/0 scram-sha-256
+    - host all all 0.0.0.0/0 scram-sha-256
+    - host replication replicator ::/0 scram-sha-256
+    - host all all ::/0 scram-sha-256
+
+tags:
+  nofailover: false
+  noloadbalance: false
+  clonefrom: false
+  nosync: false

@@ -89,7 +89,9 @@ docker-compose.yml
 docker/postgres/init/
 ```
 
-The local stack currently runs one PostgreSQL container with four separate databases.
+The default stack is now the prepared HA infrastructure described in
+`docs/infra/README.md`; it has not been built or run yet. The original one-server
+development stack is retained as `docker-compose.dev.yml`.
 
 ### Tests
 

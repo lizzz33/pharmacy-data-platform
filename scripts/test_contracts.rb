@@ -20,8 +20,8 @@ TYPE_CLASSES = {
 }.freeze
 
 def psql(database, sql)
-  command = ["docker", "compose", "exec", "-T", "postgres", "psql", "-XqAt",
-             "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "pharmacy", "-d", database]
+  command = ["docker", "compose", "run", "--rm", "-T", "--no-deps", "tools", "psql", "-XqAt",
+             "-F", "\t", "-v", "ON_ERROR_STOP=1", "-d", database]
   stdout, stderr, status = Open3.capture3(*command, stdin_data: sql, chdir: ROOT)
   raise "psql #{database} failed: #{stderr.strip}" unless status.success?
   stdout

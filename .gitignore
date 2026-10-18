@@ -13,3 +13,8 @@ wheels/
 .artifacts*
 
 *results*.txt
+
+# Local credentials and generated diagnostics
+.env
+reports/*
+!reports/.gitkeep

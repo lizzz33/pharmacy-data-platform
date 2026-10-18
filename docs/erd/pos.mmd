@@ -1,0 +1,90 @@
+erDiagram
+    PHARMACY ||--o{ CASH_REGISTER : has
+    CASH_REGISTER ||--o{ SHIFT : opens
+    SHIFT ||--o{ RECEIPT : contains
+    CASHIER ||--o{ RECEIPT : operates
+    RECEIPT ||--|{ RECEIPT_LINE : contains
+    RECEIPT ||--|{ PAYMENT : paid_by
+    RECEIPT o|--o{ RECEIPT : parent_of
+
+    PHARMACY {
+        text pharmacy_bk PK
+        text pharmacy_name
+        text region
+        text city
+        text address
+        date opened_at
+        date closed_at
+        boolean is_active
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CASH_REGISTER {
+        text register_bk PK
+        text pharmacy_bk FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CASHIER {
+        text cashier_bk PK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    SHIFT {
+        text shift_bk PK
+        text register_bk FK
+        timestamptz opened_at
+        timestamptz closed_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    RECEIPT {
+        text receipt_bk PK
+        text shift_bk FK
+        text cashier_bk FK
+        text customer_bk
+        timestamptz receipt_dt
+        text doc_type
+        text parent_receipt_bk FK
+        numeric total_amount
+        text currency
+        text prescription_bk
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    RECEIPT_LINE {
+        text receipt_bk PK,FK
+        int line_no PK
+        text sku
+        text batch_bk
+        numeric quantity
+        numeric unit_price
+        numeric line_discount
+        boolean is_rx_snapshot
+        text sku_name_snapshot
+        date batch_expiry_date_snapshot
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PAYMENT {
+        text receipt_bk PK,FK
+        int payment_no PK
+        text payment_method
+        numeric amount
+        text currency
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+%% Cross-service logical references:
+%% RECEIPT.customer_bk -> CRM CUSTOMER.customer_bk
+%% RECEIPT_LINE.sku -> Catalog SKU.sku_bk
+%% RECEIPT_LINE.batch_bk -> WMS BATCH.batch_bk
+%% PHARMACY.pharmacy_bk is referenced by WMS movement endpoints

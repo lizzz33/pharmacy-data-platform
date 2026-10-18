@@ -1,0 +1,15 @@
+{
+  "run_id": "e5-sync-baseline-1792339291",
+  "started_at": "2026-10-18T16:01:31.964+00:00",
+  "elapsed_s": 30.009,
+  "successful_transactions": 1433,
+  "failed_transactions": 0,
+  "tps": 47.752,
+  "latency_ms_median": 4.844,
+  "latency_ms_p95": 10.991,
+  "first_error": null,
+  "last_success_before_failure": null,
+  "first_success_after_failure": null,
+  "rto_s": null,
+  "acknowledged_rows_missing": []
+}

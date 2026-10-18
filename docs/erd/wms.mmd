@@ -1,0 +1,89 @@
+erDiagram
+    SUPPLIER ||--o{ PURCHASE_ORDER : receives_orders
+    DISTRIBUTION_CENTER ||--o{ PURCHASE_ORDER : destination
+    PURCHASE_ORDER ||--|{ PURCHASE_LINE : contains
+    BATCH ||--o{ PURCHASE_LINE : received_as
+    BATCH ||--o{ MOVEMENT : moves
+    BATCH ||--o{ STOCK : stocked_as
+
+    SUPPLIER {
+        text supplier_bk PK
+        text supplier_name
+        text country
+        boolean is_active
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    DISTRIBUTION_CENTER {
+        text dc_bk PK
+        text dc_name
+        text region
+        text city
+        boolean is_active
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PURCHASE_ORDER {
+        text purchase_bk PK
+        text supplier_bk FK
+        text dc_bk FK
+        timestamptz ordered_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PURCHASE_LINE {
+        text purchase_bk PK,FK
+        int line_no PK
+        text sku
+        text batch_bk FK
+        numeric quantity
+        numeric unit_cost
+        text currency
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    BATCH {
+        text batch_bk PK
+        text sku
+        text series_no
+        date manufactured_date
+        date expiry_date
+        timestamptz received_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    MOVEMENT {
+        text movement_bk PK
+        text batch_bk FK
+        text movement_type
+        text src_type
+        text src_bk
+        text dst_type
+        text dst_bk
+        numeric qty
+        timestamptz dispatched_at
+        timestamptz moved_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    STOCK {
+        text location_type PK
+        text location_bk PK
+        text batch_bk PK,FK
+        numeric qty_on_hand
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+%% Cross-service logical references:
+%% BATCH.sku / PURCHASE_LINE.sku -> Catalog SKU.sku_bk
+%% MOVEMENT src/dst with type=pharmacy -> POS PHARMACY.pharmacy_bk
+%% No physical cross-DB FK

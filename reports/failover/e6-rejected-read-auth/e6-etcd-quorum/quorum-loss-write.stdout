@@ -1,0 +1,15 @@
+{
+  "run_id": "e6-quorum-loss-1792339518",
+  "started_at": "2026-10-18T16:05:18.993+00:00",
+  "elapsed_s": 65.001,
+  "successful_transactions": 1777,
+  "failed_transactions": 210,
+  "tps": 27.338,
+  "latency_ms_median": 1.808,
+  "latency_ms_p95": 6.592,
+  "first_error": "OperationalError: server closed the connection unexpectedly",
+  "last_success_before_failure": "2026-10-18T16:05:48.857+00:00",
+  "first_success_after_failure": "2026-10-18T16:06:17.125+00:00",
+  "rto_s": 28.268,
+  "acknowledged_rows_missing": []
+}

@@ -1,0 +1,99 @@
+erDiagram
+    MANUFACTURER ||--o{ SKU : produces
+    DRUG_FORM ||--o{ SKU : has_form
+    SKU ||--o{ SKU_VERSION : has_history
+    SKU_CATEGORY ||--o{ SKU_VERSION : categorizes
+    SKU ||--o{ SKU_ACTIVE_INGREDIENT : contains
+    ACTIVE_INGREDIENT ||--o{ SKU_ACTIVE_INGREDIENT : part_of
+    SKU ||--o{ PRICE_VERSION : has_prices
+    PRICE_SCOPE ||--o{ PRICE_VERSION : scopes
+
+    MANUFACTURER {
+        text manufacturer_bk PK
+        text manufacturer_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    DRUG_FORM {
+        text drug_form_bk PK
+        text drug_form_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    ACTIVE_INGREDIENT {
+        text ingredient_bk PK
+        text inn_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    SKU_CATEGORY {
+        bigint id PK
+        text category_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PRICE_SCOPE {
+        bigint id PK
+        text scope_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    SKU {
+        text sku_bk PK
+        text manufacturer_bk FK
+        text drug_form_bk FK
+        numeric pack_qty
+        boolean is_vital
+        boolean is_active
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    SKU_VERSION {
+        bigint id PK
+        text sku_bk FK
+        text sku_name
+        bigint category_id FK
+        boolean is_rx
+        timestamptz valid_from
+        boolean is_current
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    SKU_ACTIVE_INGREDIENT {
+        text sku_bk PK,FK
+        text ingredient_bk PK,FK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PRICE_VERSION {
+        bigint id PK
+        text sku_bk FK
+        bigint price_scope_id FK
+        text scope_bk
+        numeric price
+        text currency
+        timestamptz valid_from
+        timestamptz valid_to
+        boolean is_current
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+%% Cross-service logical references:
+%% SKU.sku_bk -> POS RECEIPT_LINE.sku
+%% SKU.sku_bk -> WMS BATCH.sku / PURCHASE_LINE.sku
+%% No physical cross-DB FK

@@ -1,0 +1,8 @@
+{
+  "started_at": "2026-10-18T15:59:38+00:00",
+  "switchover_requested_at": "2026-10-18T15:59:48+00:00",
+  "old_leader": "postgres2",
+  "candidate": "postgres1",
+  "new_leader": "postgres1",
+  "new_leader_observed_s": 0.004
+}

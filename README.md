@@ -2,90 +2,235 @@
 
 Командный проект: четыре PostgreSQL-источника аптечной сети и учебный HA-стенд.
 
-**Текущее состояние инфраструктуры:** файлы подготовлены и статически проверены.
-Образы не собирались, контейнеры не запускались, работоспособность и баллы
-официального чекера на HA-стенде пока не подтверждены.
+Участники: Кауров Александр, Каневский Дмитрий, Бичурина Елизавета, Ляхов Артем.
 
-## Документация
+## Статус
 
-- [Состав, порты, запуск и параллельная работа](docs/infra/README.md).
-- [Замечания команде бизнес-логики и метод проверки](docs/infra/business-review.md).
-- [Несовместимость чекера с Patroni streaming](docs/infra/checker-compatibility.md).
-- [Внешние источники инфраструктуры](docs/sources.md).
-- [Статус проекта и исходные дизайн-заметки](notes/hw1/plan.md).
+Основной HA-стенд собран и проверен локально.
 
-## Стенд
+Официальный checker подтверждает:
 
-`docker-compose.yml` описывает три PostgreSQL 16 с Patroni, три etcd,
-HAProxy, два PgBouncer, автоматическую инициализацию и контейнер tools.
-На каждом PostgreSQL находятся четыре БД:
+- contract, keys, volume, C01–C23, X01–X10;
+- I1–I12 + P1/P2;
+- async replica + PgBouncer;
+- CDC automated checks;
+- realism 5/5.
 
-- `crm_service_db`
-- `catalog_service_db`
-- `pos_service_db`
-- `wms_service_db`
+HA проходит 5/6 автоматических проверок. Единственный красный пункт связан с тем,
+что checker требует `state=running` для всех Patroni members, тогда как здоровые
+replicas возвращаются Patroni как `state=streaming`.
 
-Основные локальные DSN, одинаковые для всех четырёх имён баз:
+Подробности: [docs/infra/checker-compatibility.md](docs/infra/checker-compatibility.md).
 
-```text
-postgresql://checker:checker@localhost:6432/pos_service_db
-postgresql://checker:checker@localhost:6433/pos_service_db
-postgresql://app:app@localhost:6432/pos_service_db
-postgresql://postgres:postgres@localhost:5000/pos_service_db
-```
+## Быстрый запуск
 
-6432 — пул к лидеру, 6433 — пул к репликам. HAProxy напрямую: 5000 RW,
-5001 RO. API Patroni: 8008/8009/8010; HAProxy statistics: 8404/stats.
-Пароли по умолчанию предназначены для этого локального учебного стенда.
-
-## Первый запуск — отдельный будущий этап
-
-Требуется Docker с Compose v2. Python/uv/Ruby на хосте для HA-команд не нужны.
-Shell-команды на Windows выполнять из WSL/Git Bash.
+Рекомендуемый путь — полностью через Docker:
 
 ```bash
 docker compose up -d --build
 ./scripts/wait_ready.sh
 ./scripts/seed.sh --seed 42
+./scripts/check.sh -v
+```
+
+На хосте нужны только Docker, Docker Compose и shell. Python/uv для основного
+сценария не требуются: checker и generator запускаются внутри контейнера `tools`.
+
+Для JSON-отчёта:
+
+```bash
 ./scripts/check.sh --json /reports/hw01-full.json -v
 ```
 
-Данные генерируются отдельной командой после создания схем. Readiness проверяет
-все четыре контракта и обе реплики. `scripts/check.sh` вызывает **неизменённый**
-официальный чекер с контейнерными адресами. Прочитать заметку о streaming выше:
-одна проверка HA может оказаться ложной ошибкой самого чекера.
-
-Проверка с хоста при наличии Python >=3.12 и uv:
-
-```bash
-uv run python hws_descriptions/hw1/hw01_check.py --submission hw01_submission.yaml -v
-```
-
-`hw01_submission.yaml` содержит адреса localhost; `hw01_submission.container.yaml`
-— имена Docker-сервисов. Оба манифеста включают master, replica, writer и admin.
-`seed_delta` получает новый seed из sequence для каждого прогона репликации.
-
-После добавления нумерованной миграции:
-
-```bash
-./scripts/migrate.sh
-```
-
-После обычной остановки volumes сохраняются:
+Остановить стенд без удаления volumes:
 
 ```bash
 docker compose down
 ```
 
-## Работа команды
+## Структура репозитория
 
-Доменный SQL, генератор и тесты сохранены. Команда продолжает исправлять их
-независимо от инфраструктурной ветки. Уже применённые миграции не переписывать:
-добавлять следующий номер или согласовать чистое пересоздание учебного стенда.
+```text
+migrations/         SQL migrations четырёх source databases
+infra/              Patroni, HAProxy, PgBouncer и tools images
+scripts/            shell entrypoints и infra orchestration
+src/pharmacy_dwh/   детерминированный генератор данных
+tests/              invariant tests и contract fixtures
+docs/               итоговая документация HW1
+notes/              рабочие design notes и open questions
+hws_descriptions/   исходные материалы HW1 и официальный checker
+reports/            generated checker reports
+```
 
-Прежний одиночный PostgreSQL доступен через `docker-compose.dev.yml` с отдельным
-Compose project; команды для него приведены в инфраструктурной документации.
+Что делает каждый script: [scripts/README.md](scripts/README.md).
 
-Не завершены: живой прогон HA, эксперименты отказоустойчивости, исправления
-бизнес-логики, финальные ERD, обязательные ADR и карта DWH mapping. Наличие
-конфигурации etcd из трёх узлов само по себе ещё не подтверждает бонус.
+## Два docker-compose
+
+`docker-compose.yml` — основной HA/submission-стенд:
+
+- 3 PostgreSQL под Patroni;
+- 3 etcd;
+- HAProxy;
+- PgBouncer RW/RO;
+- automatic bootstrap/migrations;
+- tools container.
+
+`docker-compose.dev.yml` — упрощённый single-Postgres dev-стенд. Он использовался
+для ранней отладки schema/contract/seed без HA и сейчас нужен только как быстрый
+fallback.
+
+## Submission manifests
+
+- `hw01_submission.yaml` — checker запускается **с хоста**, DSN через `localhost`;
+- `hw01_submission.container.yaml` — checker запускается **в Docker network**;
+  именно его использует `./scripts/check.sh`;
+- `hw01_submission.dev.yaml` — только для упрощённого dev-стенда.
+
+Для обычной проверки ничего выбирать не нужно:
+
+```text
+./scripts/check.sh
+    -> hw01_submission.container.yaml
+```
+
+Альтернативно checker можно запустить с хоста:
+
+```bash
+uv sync
+uv run python hws_descriptions/hw1/hw01_check.py \
+  --submission hw01_submission.yaml \
+  -v
+```
+
+## Бонусы
+
+### +1: реалистичные данные
+
+Бонус за реалистичность данных уже получен автоматически: официальный checker
+показывает `realism 5/5`.
+
+Генератор проходит все проверяемые признаки реалистичности:
+
+- недельная сезонность продаж;
+- long-tail по SKU;
+- неравномерность продаж по аптекам;
+- доля покупок без карты в допустимом диапазоне;
+- доля возвратов в допустимом диапазоне.
+
+То есть этот бонус подтверждён самим checker и не требует отдельной ручной проверки.
+
+### +1: журнал отказоустойчивости
+
+Бонусный журнал Э1–Э7 полностью выполнен на реальном HA-стенде.
+
+Основной документ:
+
+- [docs/failover_journal.md](docs/failover_journal.md) — команды, измеренные RTO/TPS/latency, raw excerpts и выводы.
+
+Сырые доказательства:
+
+- [reports/failover/](reports/failover/) — JSONL write-loop, summaries, Patroni/etcd logs, topology snapshots и exact commands;
+- [reports/failover/README.md](reports/failover/README.md) — какие прогоны считаются валидными и какие диагностические прогоны были отвергнуты.
+
+Ключевые измерения:
+
+- emergency failover RTO: 27.579 с;
+- planned switchover RTO: 3.419 с;
+- возвращённый узел снова стал streaming-replica через 23.116 с;
+- PgBouncer обслужил 250/250 клиентов, тогда как прямой PostgreSQL дал 25 ошибок из 250.
+
+### +1: кворумный etcd
+
+Стенд использует 3 etcd member, quorum = 2/3. Отдельная демонстрация выполнена в эксперименте Э6.
+
+Где смотреть доказательство:
+
+- [docs/failover_journal.md — Э6](docs/failover_journal.md) — итог и интерпретация;
+- `reports/failover/e6-one-etcd-down/` — один etcd недоступен, quorum сохраняется, запись продолжается;
+- `reports/failover/e6-quorum-loss/` — доступны только 1 из 3 etcd, quorum теряется;
+- `reports/failover/e6-etcd-quorum/` — служебные проверки и итоговое восстановление.
+
+Фактически продемонстрировано:
+
+```text
+3/3 etcd healthy
+   ↓ stop 1
+2/3 available -> quorum сохраняется -> 728/728 writes succeed
+   ↓ restore
+3/3 healthy
+   ↓ stop 2
+1/3 available -> quorum lost -> Patroni demotes leader -> read-only
+   ↓ restore
+3/3 healthy, 1 leader + 2 streaming replicas
+```
+
+После экспериментов `./scripts/wait_ready.sh` снова проходит, `synchronous_mode=false` восстановлен.
+
+## Документация для проверки
+
+Основные submission-документы лежат в `docs/`:
+
+- [ERD четырёх источников](docs/erd/) — физическая модель, PK/FK и cross-service BK;
+- [ADR](docs/adr/) — архитектурные решения и отвергнутые альтернативы;
+- [DWH mapping](docs/dwh_mapping.md) — карта склейки источников для следующих ДЗ;
+- [Failover journal](docs/failover_journal.md) — выполненные Э1–Э7 с реальными измерениями;
+- [Failover evidence](reports/failover/) — raw logs, write events, summaries и доказательство quorum etcd;
+- [Sources](docs/sources.md) — внешние источники и документация;
+- [Infrastructure notes](docs/infra/README.md) — состав стенда, порты и детали запуска.
+
+Рабочие проектные заметки и незакрытые вопросы:
+
+- [notes/hw1/plan.md](notes/hw1/plan.md)
+- [notes/hw1/open_questions.md](notes/hw1/open_questions.md)
+
+## Connection strings
+
+Через PgBouncer:
+
+```text
+RW checker: postgresql://checker:checker@localhost:6432/<service>_service_db
+RO checker: postgresql://checker:checker@localhost:6433/<service>_service_db
+RW app:     postgresql://app:app@localhost:6432/<service>_service_db
+```
+
+HAProxy напрямую:
+
+```text
+RW admin:   postgresql://postgres:postgres@localhost:5000/<service>_service_db
+RO:         postgresql://postgres:postgres@localhost:5001/<service>_service_db
+```
+
+Service names:
+
+```text
+crm
+catalog
+pos
+wms
+```
+
+Например: `pos_service_db`.
+
+## Если добавили новую migration
+
+Не переписывайте уже применённые migrations. Добавляйте новый нумерованный SQL-файл
+и запускайте:
+
+```bash
+./scripts/migrate.sh
+```
+
+## Что ещё требует ручной проверки
+
+Автоматический checker не закрывает всё задание. Перед сдачей нужно глазами проверить:
+
+- читаемость ERD;
+- минимум 5 ADR с реальными trade-off;
+- полноту `docs/dwh_mapping.md`;
+- корректность `README.md` и connection strings;
+- `docs/sources.md`;
+- сопоставить итоговые числа bonus-экспериментов с raw evidence из
+  `reports/failover/` перед сдачей.
+
+Известные предметные edge cases, которые не блокируют текущий checker, собраны в
+[notes/hw1/open_questions.md](notes/hw1/open_questions.md).

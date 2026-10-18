@@ -1,0 +1,15 @@
+{
+  "run_id": "e5-sync-failover-1792339322",
+  "started_at": "2026-10-18T16:02:02.463+00:00",
+  "elapsed_s": 70.021,
+  "successful_transactions": 1715,
+  "failed_transactions": 30,
+  "tps": 24.493,
+  "latency_ms_median": 4.135,
+  "latency_ms_p95": 12.704,
+  "first_error": "OperationalError: server closed the connection unexpectedly",
+  "last_success_before_failure": "2026-10-18T16:02:12.306+00:00",
+  "first_success_after_failure": "2026-10-18T16:02:44.512+00:00",
+  "rto_s": 32.201,
+  "acknowledged_rows_missing": []
+}

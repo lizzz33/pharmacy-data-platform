@@ -1,0 +1,15 @@
+{
+  "run_id": "e1-baseline-1792338762",
+  "started_at": "2026-10-18T15:52:43.268+00:00",
+  "elapsed_s": 60.009,
+  "successful_transactions": 2874,
+  "failed_transactions": 0,
+  "tps": 47.893,
+  "latency_ms_median": 3.809,
+  "latency_ms_p95": 8.535,
+  "first_error": null,
+  "last_success_before_failure": null,
+  "first_success_after_failure": null,
+  "rto_s": null,
+  "acknowledged_rows_missing": []
+}

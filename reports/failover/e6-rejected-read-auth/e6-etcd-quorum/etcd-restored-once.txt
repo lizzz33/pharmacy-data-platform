@@ -1,0 +1,3 @@
+http://etcd2:2379 is healthy: successfully committed proposal: took = 3.287041ms
+http://etcd3:2379 is healthy: successfully committed proposal: took = 3.247958ms
+http://etcd1:2379 is healthy: successfully committed proposal: took = 3.312709ms

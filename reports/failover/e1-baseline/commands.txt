@@ -1,0 +1,4 @@
+[2026-10-18T15:52:41+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T15:52:42+00:00] docker version
+[2026-10-18T15:52:42+00:00] docker compose version
+[2026-10-18T15:52:42+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 60 --run-id e1-baseline-1792338762 --events /reports/failover/e1-baseline/write-events.jsonl --summary /reports/failover/e1-baseline/write-summary.json

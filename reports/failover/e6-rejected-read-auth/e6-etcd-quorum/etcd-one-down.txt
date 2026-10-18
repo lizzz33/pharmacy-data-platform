@@ -1,0 +1,5 @@
+http://etcd2:2379 is healthy: successfully committed proposal: took = 3.907583ms
+http://etcd1:2379 is healthy: successfully committed proposal: took = 4.078833ms
+{"level":"warn","ts":"2026-10-18T16:05:02.759750Z","logger":"client","caller":"v3@v3.5.21/retry_interceptor.go:63","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0x400034a000/etcd3:2379","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = latest balancer error: last connection error: connection error: desc = \"transport: Error while dialing: dial tcp: lookup etcd3 on 127.0.0.11:53: no such host\""}
+http://etcd3:2379 is unhealthy: failed to commit proposal: context deadline exceeded
+Error: unhealthy cluster

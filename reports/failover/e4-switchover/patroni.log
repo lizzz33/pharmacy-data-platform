@@ -1,0 +1,590 @@
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:38,582 WARNING: Exception happened during processing of request from 172.21.0.8:58702
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:38,582 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres3-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres3-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres3-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres3-1  |     self.handle()
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres3-1  |     self.handle_one_request()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres3-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres3-1  |     method()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres3-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres3-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres3-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres3-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres3-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres3-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:41,616 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48,501 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.557 UTC [1057] LOG:  replication terminated by primary server
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.557 UTC [1057] DETAIL:  End of WAL reached on timeline 5 at 0/11D6A9A8.
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.557 UTC [1057] FATAL:  could not send end-of-streaming message to primary: server closed the connection unexpectedly
+pharmacy-hw1-postgres3-1  | 		This probably means the server terminated abnormally
+pharmacy-hw1-postgres3-1  | 		before or while processing the request.
+pharmacy-hw1-postgres3-1  | 	no COPY in progress
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.557 UTC [37] LOG:  invalid record length at 0/11D6A9A8: expected at least 24, got 0
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.565 UTC [1235] FATAL:  could not connect to the primary server: connection to server at "postgres2" (172.21.0.5), port 5432 failed: Connection refused
+pharmacy-hw1-postgres3-1  | 		Is the server running on that host and accepting TCP/IP connections?
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:48.565 UTC [37] LOG:  waiting for WAL to become available at 0/11D6A9C0
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:49,586 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:49,614 INFO: Got response from postgres1 http://postgres1:8008/patroni: {"state": "running", "postmaster_start_time": "2026-10-18 15:59:01.782554+00:00", "role": "replica", "server_version": 160015, "xlog": {"received_location": 299280808, "replayed_location": 299280808, "replayed_timestamp": "2026-10-18 15:59:48.506202+00:00", "paused": false}, "timeline": 5, "cluster_unlocked": true, "dcs_last_seen": 1792339189, "database_system_identifier": "7698014224017305631", "patroni": {"version": "4.1.0", "scope": "pharmacy-hw1", "name": "postgres1"}}
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:49,614 INFO: switchover: to postgres1, i am postgres3
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,635 INFO: Local timeline=5 lsn=0/11D6A9A8
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,657 INFO: primary_timeline=6
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,657 INFO: primary: history=2	0/119E5E78	no recovery target specified
+pharmacy-hw1-postgres3-1  | 3	0/11B375E8	no recovery target specified
+pharmacy-hw1-postgres3-1  | 4	0/11C71F80	no recovery target specified
+pharmacy-hw1-postgres3-1  | 5	0/11D6A9A8	no recovery target specified
+pharmacy-hw1-postgres3-1  | server signaled
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.661 UTC [33] LOG:  received SIGHUP, reloading configuration files
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.661 UTC [33] LOG:  parameter "primary_conninfo" changed to "dbname=postgres user=replicator passfile=/tmp/patroni.pgpass host=postgres1 port=5432 sslmode=prefer application_name=postgres3 gssencmode=prefer channel_binding=prefer"
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.676 UTC [1254] LOG:  fetching timeline history file for timeline 6 from primary server
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,680 INFO: following a different leader because i am not the healthiest node
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.680 UTC [1254] LOG:  started streaming WAL from primary at 0/11000000 on timeline 5
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,680 INFO: Lock owner: postgres1; I am postgres3
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,688 INFO: Local timeline=5 lsn=0/11D6A9A8
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.708 UTC [1254] LOG:  replication terminated by primary server
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.708 UTC [1254] DETAIL:  End of WAL reached on timeline 5 at 0/11D6A9A8.
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.708 UTC [37] LOG:  new target timeline is 6
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51.709 UTC [1254] LOG:  restarted WAL streaming at 0/11000000 on timeline 6
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,723 INFO: primary_timeline=6
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,723 INFO: primary: history=2	0/119E5E78	no recovery target specified
+pharmacy-hw1-postgres3-1  | 3	0/11B375E8	no recovery target specified
+pharmacy-hw1-postgres3-1  | 4	0/11C71F80	no recovery target specified
+pharmacy-hw1-postgres3-1  | 5	0/11D6A9A8	no recovery target specified
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:51,770 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:53,856 WARNING: Exception happened during processing of request from 172.21.0.8:33676
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:53,858 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres3-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres3-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres3-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres3-1  |     self.handle()
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres3-1  |     self.handle_one_request()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres3-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres3-1  |     method()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres3-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres3-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres3-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres3-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres3-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres3-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:54,641 WARNING: Exception happened during processing of request from 172.21.0.8:33690
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:54,643 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres3-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres3-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres3-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres3-1  |     self.handle()
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres3-1  |     self.handle_one_request()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres3-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres3-1  |     method()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres3-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres3-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres3-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres3-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres3-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres3-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:56,666 WARNING: Exception happened during processing of request from 172.21.0.8:33706
+pharmacy-hw1-postgres3-1  | 2026-10-18 15:59:56,667 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres3-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres3-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres3-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres3-1  |     self.handle()
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres3-1  |     self.handle_one_request()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres3-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres3-1  |     method()
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres3-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres3-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres3-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres3-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres3-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres3-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres3-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres3-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 
+pharmacy-hw1-postgres3-1  | 2026-10-18 16:00:00,777 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres3-1  | 2026-10-18 16:00:10,824 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres3-1  | 2026-10-18 16:00:20,772 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres3-1  | 2026-10-18 16:00:30,808 INFO: no action. I am (postgres3), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:41,613 INFO: no action. I am (postgres1), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:43,816 WARNING: Exception happened during processing of request from 172.21.0.8:57878
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:43,818 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48,501 INFO: no action. I am (postgres1), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.556 UTC [134] LOG:  replication terminated by primary server
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.556 UTC [134] DETAIL:  End of WAL reached on timeline 5 at 0/11D6A9A8.
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.556 UTC [134] FATAL:  could not send end-of-streaming message to primary: server closed the connection unexpectedly
+pharmacy-hw1-postgres1-1  | 		This probably means the server terminated abnormally
+pharmacy-hw1-postgres1-1  | 		before or while processing the request.
+pharmacy-hw1-postgres1-1  | 	no COPY in progress
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.557 UTC [130] LOG:  invalid resource manager ID 51 at 0/11D6A9A8
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.564 UTC [280] FATAL:  could not connect to the primary server: connection to server at "postgres2" (172.21.0.5), port 5432 failed: Connection refused
+pharmacy-hw1-postgres1-1  | 		Is the server running on that host and accepting TCP/IP connections?
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:48.564 UTC [130] LOG:  waiting for WAL to become available at 0/11D6A9C0
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49,586 INFO: no action. I am (postgres1), a secondary, and following a leader (postgres2)
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49,647 INFO: Cleaning up failover key after acquiring leader lock...
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49,651 INFO: promoted self to leader by acquiring session lock
+pharmacy-hw1-postgres1-1  | server promoting
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.653 UTC [130] LOG:  received promote request
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.653 UTC [130] LOG:  redo done at 0/11D6A930 system usage: CPU: user: 0.08 s, system: 0.09 s, elapsed: 47.74 s
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.653 UTC [130] LOG:  last completed transaction was at log time 2026-10-18 15:59:48.506202+00
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.658 UTC [130] LOG:  selected new timeline ID: 6
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.691 UTC [130] LOG:  archive recovery complete
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.718 UTC [128] LOG:  checkpoint starting: force
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:49.722 UTC [126] LOG:  database system is ready to accept connections
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:50.736 UTC [128] LOG:  checkpoint complete: wrote 214 buffers (1.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.007 s, sync=0.007 s, total=1.018 s; sync files=46, longest=0.004 s, average=0.001 s; distance=2252 kB, estimate=2252 kB; lsn=0/11D6AA48, redo lsn=0/11D6A9D8
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:50.736 UTC [128] LOG:  checkpoint starting: immediate force wait
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:50.739 UTC [128] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.004 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=2027 kB; lsn=0/11D6AAF8, redo lsn=0/11D6AAC0
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:50,756 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:50,802 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:55,842 WARNING: Exception happened during processing of request from 172.21.0.8:51404
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:55,843 WARNING: Exception happened during processing of request from 172.21.0.8:51402
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:55,844 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 2026-10-18 15:59:55,845 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:00,814 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:07,872 WARNING: Exception happened during processing of request from 172.21.0.8:36262
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:07,872 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:10,814 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:20,810 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:30,765 INFO: no action. I am (postgres1), the leader with the lock
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:33,996 WARNING: Exception happened during processing of request from 172.21.0.8:52228
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:33,998 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:33,998 WARNING: Exception happened during processing of request from 172.21.0.8:52236
+pharmacy-hw1-postgres1-1  | 2026-10-18 16:00:33,999 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres1-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres1-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres1-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres1-1  |     self.handle()
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres1-1  |     self.handle_one_request()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres1-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres1-1  |     method()
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres1-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres1-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres1-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres1-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres1-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres1-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres1-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres1-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres1-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:41,568 INFO: no action. I am (postgres2), the leader with the lock
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,400 INFO: received switchover request with leader=postgres2 candidate=postgres1 scheduled_at=None
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,405 INFO: Got response from postgres1 http://postgres1:8008/patroni: {"state": "running", "postmaster_start_time": "2026-10-18 15:59:01.782554+00:00", "role": "replica", "server_version": 160015, "xlog": {"received_location": 299276088, "replayed_location": 299276088, "replayed_timestamp": "2026-10-18 15:59:48.384889+00:00", "paused": false}, "timeline": 5, "replication_state": "streaming", "dcs_last_seen": 1792339181, "database_system_identifier": "7698014224017305631", "patroni": {"version": "4.1.0", "scope": "pharmacy-hw1", "name": "postgres1"}}
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,458 INFO: Got response from postgres1 http://postgres1:8008/patroni: {"state": "running", "postmaster_start_time": "2026-10-18 15:59:01.782554+00:00", "role": "replica", "server_version": 160015, "xlog": {"received_location": 299276856, "replayed_location": 299276856, "replayed_timestamp": "2026-10-18 15:59:48.445879+00:00", "paused": false}, "timeline": 5, "replication_state": "streaming", "dcs_last_seen": 1792339188, "database_system_identifier": "7698014224017305631", "patroni": {"version": "4.1.0", "scope": "pharmacy-hw1", "name": "postgres1"}}
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,409 INFO: Lock owner: postgres2; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,460 INFO: switchover: demoting myself
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48,461 INFO: Demoting self (graceful)
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.503 UTC [51] LOG:  checkpoint starting: immediate force wait
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.519 UTC [51] LOG:  checkpoint complete: wrote 112 buffers (0.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.004 s, total=0.017 s; sync files=34, longest=0.003 s, average=0.001 s; distance=990 kB, estimate=2211 kB; lsn=0/11D6A8B8, redo lsn=0/11D69C38
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.519 UTC [49] LOG:  received fast shutdown request
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.520 UTC [49] LOG:  aborting any active transactions
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.520 UTC [594] FATAL:  terminating connection due to administrator command
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.521 UTC [582] FATAL:  terminating connection due to administrator command
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.521 UTC [69] FATAL:  terminating connection due to administrator command
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.521 UTC [64] FATAL:  terminating connection due to administrator command
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.525 UTC [49] LOG:  background worker "logical replication launcher" (PID 400) exited with exit code 1
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.533 UTC [51] LOG:  shutting down
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.544 UTC [51] LOG:  checkpoint starting: shutdown immediate
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.549 UTC [51] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.006 s; sync files=0, longest=0.000 s, average=0.000 s; distance=3 kB, estimate=1990 kB; lsn=0/11D6A930, redo lsn=0/11D6A930
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.554 UTC [631] FATAL:  the database system is shutting down
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:48.562 UTC [49] LOG:  database system is shut down
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,605 INFO: Leader key released
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,605 INFO: Lock owner: None; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,605 INFO: not healthy enough for leader race
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,605 INFO: switchover: demote in progress
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,647 INFO: Lock owner: postgres1; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:49,649 INFO: switchover: demote in progress
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:50,708 INFO: Lock owner: postgres1; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:50,751 INFO: switchover: demote in progress
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:50,759 INFO: Lock owner: postgres1; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:50,760 INFO: switchover: demote in progress
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,612 INFO: Local timeline=5 lsn=0/11D6A930
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,647 INFO: primary_timeline=6
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,649 INFO: primary: history=2	0/119E5E78	no recovery target specified
+pharmacy-hw1-postgres2-1  | 3	0/11B375E8	no recovery target specified
+pharmacy-hw1-postgres2-1  | 4	0/11C71F80	no recovery target specified
+pharmacy-hw1-postgres2-1  | 5	0/11D6A9A8	no recovery target specified
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,650 INFO: closed patroni connections to postgres
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,840 INFO: postmaster pid=652
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.844 UTC [652] LOG:  starting PostgreSQL 16.15 (Debian 16.15-1.pgdg12+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.844 UTC [652] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.845 UTC [652] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.851 UTC [656] LOG:  database system was shut down at 2026-10-18 15:59:48 UTC
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.851 UTC [657] FATAL:  the database system is starting up
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.851 UTC [656] LOG:  entering standby mode
+pharmacy-hw1-postgres2-1  | localhost:5432 - rejecting connections
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.855 UTC [656] LOG:  consistent recovery state reached at 0/11D6A9A8
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.855 UTC [656] LOG:  invalid record length at 0/11D6A9A8: expected at least 24, got 0
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.856 UTC [652] LOG:  database system is ready to accept read-only connections
+pharmacy-hw1-postgres2-1  | localhost:5432 - accepting connections
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,861 INFO: Lock owner: postgres1; I am postgres2
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,861 INFO: establishing a new patroni heartbeat connection to postgres
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.868 UTC [659] LOG:  fetching timeline history file for timeline 6 from primary server
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.870 UTC [659] LOG:  started streaming WAL from primary at 0/11000000 on timeline 5
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.884 UTC [659] LOG:  replication terminated by primary server
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.884 UTC [659] DETAIL:  End of WAL reached on timeline 5 at 0/11D6A9A8.
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.884 UTC [656] LOG:  new target timeline is 6
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.885 UTC [659] LOG:  restarted WAL streaming at 0/11000000 on timeline 6
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.885 UTC [662] ERROR:  cannot execute INSERT in a read-only transaction
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.885 UTC [662] STATEMENT:  
+pharmacy-hw1-postgres2-1  | 	                        INSERT INTO failover_bench.write_probe
+pharmacy-hw1-postgres2-1  | 	                            (run_id, sequence_no, client_started_at)
+pharmacy-hw1-postgres2-1  | 	                        VALUES ('e4-switchover-1792339178', 485, clock_timestamp())
+pharmacy-hw1-postgres2-1  | 	                        RETURNING committed_at::text
+pharmacy-hw1-postgres2-1  | 	                        
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.903 UTC [663] ERROR:  cannot execute INSERT in a read-only transaction
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.903 UTC [663] STATEMENT:  
+pharmacy-hw1-postgres2-1  | 	                        INSERT INTO failover_bench.write_probe
+pharmacy-hw1-postgres2-1  | 	                            (run_id, sequence_no, client_started_at)
+pharmacy-hw1-postgres2-1  | 	                        VALUES ('e4-switchover-1792339178', 486, clock_timestamp())
+pharmacy-hw1-postgres2-1  | 	                        RETURNING committed_at::text
+pharmacy-hw1-postgres2-1  | 	                        
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51.917 UTC [656] LOG:  redo starts at 0/11D6A9A8
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:51,920 INFO: no action. I am (postgres2), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:53,281 INFO: establishing a new patroni restapi connection to postgres
+pharmacy-hw1-postgres2-1  | 2026-10-18 15:59:55.349 UTC [664] LOG:  could not receive data from client: Connection reset by peer
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:00,777 INFO: no action. I am (postgres2), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:10,822 INFO: no action. I am (postgres2), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:11,387 WARNING: Exception happened during processing of request from 172.21.0.8:33174
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:11,389 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres2-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres2-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres2-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres2-1  |     self.handle()
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres2-1  |     self.handle_one_request()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres2-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres2-1  |     method()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres2-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres2-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres2-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres2-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres2-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres2-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:20,814 INFO: no action. I am (postgres2), a secondary, and following a leader (postgres1)
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:21,409 WARNING: Exception happened during processing of request from 172.21.0.8:57622
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:21,412 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres2-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres2-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres2-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres2-1  |     self.handle()
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres2-1  |     self.handle_one_request()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres2-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres2-1  |     method()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres2-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres2-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres2-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres2-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres2-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres2-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:25,427 WARNING: Exception happened during processing of request from 172.21.0.8:41880
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:25,432 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres2-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres2-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres2-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres2-1  |     self.handle()
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres2-1  |     self.handle_one_request()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres2-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres2-1  |     method()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres2-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres2-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres2-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres2-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres2-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres2-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:27,431 WARNING: Exception happened during processing of request from 172.21.0.8:41894
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:27,432 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres2-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres2-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres2-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres2-1  |     self.handle()
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres2-1  |     self.handle_one_request()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres2-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres2-1  |     method()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres2-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres2-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres2-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres2-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres2-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres2-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:29,447 WARNING: Exception happened during processing of request from 172.21.0.8:41910
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:29,449 WARNING: Traceback (most recent call last):
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 691, in process_request_thread
+pharmacy-hw1-postgres2-1  |     self.finish_request(request, client_address)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 361, in finish_request
+pharmacy-hw1-postgres2-1  |     self.RequestHandlerClass(request, client_address, self)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 117, in __init__
+pharmacy-hw1-postgres2-1  |     super(RestApiHandler, self).__init__(request, client_address, server)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 755, in __init__
+pharmacy-hw1-postgres2-1  |     self.handle()
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 432, in handle
+pharmacy-hw1-postgres2-1  |     self.handle_one_request()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 1459, in handle_one_request
+pharmacy-hw1-postgres2-1  |     BaseHTTPRequestHandler.handle_one_request(self)
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/http/server.py", line 420, in handle_one_request
+pharmacy-hw1-postgres2-1  |     method()
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 416, in do_GET
+pharmacy-hw1-postgres2-1  |     self._write_status_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 243, in _write_status_response
+pharmacy-hw1-postgres2-1  |     self._write_json_response(status_code, response)
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 189, in _write_json_response
+pharmacy-hw1-postgres2-1  |     self.write_response(status_code, json.dumps(response, default=str), content_type='application/json')
+pharmacy-hw1-postgres2-1  |   File "/opt/patroni/lib/python3.11/site-packages/patroni/api.py", line 179, in write_response
+pharmacy-hw1-postgres2-1  |     self.wfile.write(body.encode('utf-8'))
+pharmacy-hw1-postgres2-1  |   File "/usr/lib/python3.11/socketserver.py", line 834, in write
+pharmacy-hw1-postgres2-1  |     self._sock.sendall(b)
+pharmacy-hw1-postgres2-1  | ConnectionResetError: [Errno 104] Connection reset by peer
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 
+pharmacy-hw1-postgres2-1  | 2026-10-18 16:00:30,767 INFO: no action. I am (postgres2), a secondary, and following a leader (postgres1)

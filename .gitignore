@@ -13,8 +13,11 @@ wheels/
 .artifacts*
 
 *results*.txt
+AGENTS.md
 
 # Local credentials and generated diagnostics
 .env
 reports/*
 !reports/.gitkeep
+!reports/failover/
+!reports/failover/**

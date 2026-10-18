@@ -1,0 +1,15 @@
+{
+  "run_id": "e2-e3-failover-1792338967",
+  "started_at": "2026-10-18T15:56:08.496+00:00",
+  "elapsed_s": 70.02,
+  "successful_transactions": 2163,
+  "failed_transactions": 1,
+  "tps": 30.891,
+  "latency_ms_median": 3.188,
+  "latency_ms_p95": 9.511,
+  "first_error": "OperationalError: server closed the connection unexpectedly",
+  "last_success_before_failure": "2026-10-18T15:56:18.011+00:00",
+  "first_success_after_failure": "2026-10-18T15:56:18.051+00:00",
+  "rto_s": 0.04,
+  "acknowledged_rows_missing": []
+}

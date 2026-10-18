@@ -1,0 +1,2 @@
+ Container pharmacy-hw1-postgres2-1  Stopping
+ Container pharmacy-hw1-postgres2-1  Stopped

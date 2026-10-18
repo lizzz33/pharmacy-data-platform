@@ -1,0 +1,15 @@
+{
+  "run_id": "e6-one-etcd-down-1792339502",
+  "started_at": "2026-10-18T16:05:03.111+00:00",
+  "elapsed_s": 15.004,
+  "successful_transactions": 727,
+  "failed_transactions": 0,
+  "tps": 48.454,
+  "latency_ms_median": 1.832,
+  "latency_ms_p95": 3.342,
+  "first_error": null,
+  "last_success_before_failure": null,
+  "first_success_after_failure": null,
+  "rto_s": null,
+  "acknowledged_rows_missing": []
+}

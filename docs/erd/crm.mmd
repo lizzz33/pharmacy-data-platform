@@ -1,0 +1,87 @@
+erDiagram
+    CUSTOMER ||--o{ CUSTOMER_PROFILE_VERSION : has_history
+    LOYALTY_LEVEL ||--o{ CUSTOMER_PROFILE_VERSION : has_level
+    CUSTOMER ||--o{ CUSTOMER_CONTACT : has
+    CONTACT_TYPE ||--o{ CUSTOMER_CONTACT : has_type
+    CUSTOMER ||--o{ CONSENT : grants
+    CONSENT_TYPE ||--o{ CONSENT : has_type
+    CUSTOMER ||--o{ LOYALTY_CARD : owns
+
+    CUSTOMER {
+        text customer_bk PK
+        int birth_year
+        text sex
+        timestamptz registered_at
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CUSTOMER_PROFILE_VERSION {
+        bigint id PK
+        text customer_bk FK
+        text city
+        text region
+        bigint loyalty_level_id FK
+        timestamptz valid_from
+        boolean is_current
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    LOYALTY_LEVEL {
+        bigint id PK
+        text level_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CONTACT_TYPE {
+        bigint id PK
+        text type_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CUSTOMER_CONTACT {
+        text contact_bk PK
+        text customer_bk FK
+        bigint contact_type_id FK
+        text contact_value
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CONSENT_TYPE {
+        bigint id PK
+        text type_name UK
+        timestamptz deleted_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    CONSENT {
+        text consent_bk PK
+        text customer_bk FK
+        bigint consent_type_id FK
+        timestamptz issued_at
+        timestamptz revoked_at
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    LOYALTY_CARD {
+        text card_bk PK
+        text customer_bk FK
+        timestamptz issued_at
+        timestamptz closed_at
+        text status
+        numeric bonus_balance
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+%% Cross-service logical reference:
+%% CUSTOMER.customer_bk -> POS RECEIPT.customer_bk (no physical cross-DB FK)

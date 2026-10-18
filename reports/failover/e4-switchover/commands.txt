@@ -1,0 +1,5 @@
+[2026-10-18T15:59:37+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T15:59:38+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 45 --run-id e4-switchover-1792339178 --events /reports/failover/e4-switchover/write-events.jsonl --summary /reports/failover/e4-switchover/write-summary.json
+[2026-10-18T15:59:48+00:00] docker compose exec -T postgres2 patronictl -c /etc/patroni/patroni.yml switchover pharmacy-hw1 --leader postgres2 --candidate postgres1 --force
+[2026-10-18T16:00:23+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T16:00:35+00:00] docker compose logs --since 2026-10-18T15:59:38+00:00 postgres1 postgres2 postgres3

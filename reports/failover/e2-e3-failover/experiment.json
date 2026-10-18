@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-10-18T15:58:05+00:00",
+  "old_leader": "postgres1",
+  "leader_stopped_at": "2026-10-18T15:58:15+00:00",
+  "new_leader": "postgres2",
+  "promotion_observed_s": 24.333,
+  "old_node_started_at": "2026-10-18T15:58:40+00:00",
+  "rejoin_s": 23.116,
+  "rejoin_observed_s": 22.291,
+  "old_node_role_after_return": "replica"
+}

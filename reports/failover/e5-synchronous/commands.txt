@@ -1,0 +1,11 @@
+[2026-10-18T16:00:47+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T16:00:48+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 30 --run-id e5-async-baseline-1792339248 --events /reports/failover/e5-async-baseline/write-events.jsonl --summary /reports/failover/e5-async-baseline/write-summary.json
+[2026-10-18T16:01:18+00:00] docker compose exec -T postgres1 patronictl -c /etc/patroni/patroni.yml edit-config pharmacy-hw1 --set synchronous_mode=true --force
+[2026-10-18T16:01:31+00:00] docker compose exec -T postgres1 patronictl -c /etc/patroni/patroni.yml show-config pharmacy-hw1
+[2026-10-18T16:01:31+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 30 --run-id e5-sync-baseline-1792339291 --events /reports/failover/e5-sync-baseline/write-events.jsonl --summary /reports/failover/e5-sync-baseline/write-summary.json
+[2026-10-18T16:02:02+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 70 --run-id e5-sync-failover-1792339322 --events /reports/failover/e5-sync-failover/write-events.jsonl --summary /reports/failover/e5-sync-failover/write-summary.json
+[2026-10-18T16:02:12+00:00] docker compose stop -t 0 postgres1
+[2026-10-18T16:02:41+00:00] docker compose start postgres1
+[2026-10-18T16:03:59+00:00] docker compose exec -T postgres3 patronictl -c /etc/patroni/patroni.yml edit-config pharmacy-hw1 --set synchronous_mode=false --force
+[2026-10-18T16:04:12+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T16:04:26+00:00] docker compose logs --since 2026-10-18T16:00:48+00:00 postgres1 postgres2 postgres3

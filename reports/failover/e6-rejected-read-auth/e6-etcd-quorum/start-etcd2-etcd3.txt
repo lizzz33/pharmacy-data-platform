@@ -1,0 +1,4 @@
+ Container pharmacy-hw1-etcd2-1  Starting
+ Container pharmacy-hw1-etcd3-1  Starting
+ Container pharmacy-hw1-etcd2-1  Started
+ Container pharmacy-hw1-etcd3-1  Started

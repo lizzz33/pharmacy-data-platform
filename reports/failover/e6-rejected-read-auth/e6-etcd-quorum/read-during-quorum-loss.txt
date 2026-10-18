@@ -1,0 +1,1 @@
+psql: error: connection to server at "pgbouncer-ro" (172.21.0.9), port 6432 failed: FATAL:  SASL authentication failed

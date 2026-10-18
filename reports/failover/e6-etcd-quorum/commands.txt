@@ -1,0 +1,15 @@
+[2026-10-18T16:07:00+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T16:07:01+00:00] docker compose exec -T etcd1 /usr/local/bin/etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health
+[2026-10-18T16:07:02+00:00] docker compose stop etcd3
+[2026-10-18T16:07:11+00:00] docker compose exec -T etcd1 /usr/local/bin/etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health
+[2026-10-18T16:07:16+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 15 --run-id e6-one-etcd-down-1792339636 --events /reports/failover/e6-one-etcd-down/write-events.jsonl --summary /reports/failover/e6-one-etcd-down/write-summary.json
+[2026-10-18T16:07:31+00:00] docker compose start etcd3
+[2026-10-18T16:07:32+00:00] docker compose exec -T etcd1 /usr/local/bin/etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health
+[2026-10-18T16:07:32+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 65 --run-id e6-quorum-loss-1792339652 --events /reports/failover/e6-quorum-loss/write-events.jsonl --summary /reports/failover/e6-quorum-loss/write-summary.json
+[2026-10-18T16:07:37+00:00] docker compose stop etcd2 etcd3
+[2026-10-18T16:08:20+00:00] docker compose exec -T etcd1 /usr/local/bin/etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health
+[2026-10-18T16:08:25+00:00] docker compose run --rm -T --no-deps -e PGPASSWORD=checker tools psql -h pgbouncer-ro -p 6432 -U checker -d pos_service_db -XAtqc "SELECT clock_timestamp(), pg_is_in_recovery(), count(*) FROM contract.v_receipt"
+[2026-10-18T16:08:26+00:00] docker compose start etcd2 etcd3
+[2026-10-18T16:08:37+00:00] docker compose exec -T etcd1 /usr/local/bin/etcdctl --endpoints=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379 endpoint health
+[2026-10-18T16:08:38+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T16:08:38+00:00] docker compose logs --since 2026-10-18T16:07:01+00:00 postgres1 postgres2 postgres3

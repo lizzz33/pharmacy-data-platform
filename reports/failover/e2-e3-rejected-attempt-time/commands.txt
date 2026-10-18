@@ -1,0 +1,6 @@
+[2026-10-18T15:56:06+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T15:56:07+00:00] docker compose run --rm -T --no-deps tools python scripts/failover/write_load.py --duration 70 --run-id e2-e3-failover-1792338967 --events /reports/failover/e2-e3-failover/write-events.jsonl --summary /reports/failover/e2-e3-failover/write-summary.json
+[2026-10-18T15:56:17+00:00] docker compose stop -t 0 postgres2
+[2026-10-18T15:56:39+00:00] docker compose start postgres2
+[2026-10-18T15:57:18+00:00] ./scripts/wait_ready.sh --timeout 240
+[2026-10-18T15:57:19+00:00] docker compose logs --since 2026-10-18T15:56:07+00:00 postgres1 postgres2 postgres3

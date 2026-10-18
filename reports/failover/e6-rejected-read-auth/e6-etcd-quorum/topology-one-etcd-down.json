@@ -1,0 +1,44 @@
+{
+  "members": [
+    {
+      "name": "postgres1",
+      "role": "replica",
+      "state": "streaming",
+      "api_url": "http://postgres1:8008/patroni",
+      "host": "postgres1",
+      "port": 5432,
+      "timeline": 7,
+      "receive_lag": 0,
+      "receive_lsn": "0/1204F360",
+      "replay_lag": 0,
+      "replay_lsn": "0/1204F360",
+      "lag": 0,
+      "lsn": "0/1204F360"
+    },
+    {
+      "name": "postgres2",
+      "role": "replica",
+      "state": "streaming",
+      "api_url": "http://postgres2:8008/patroni",
+      "host": "postgres2",
+      "port": 5432,
+      "timeline": 7,
+      "receive_lag": 0,
+      "receive_lsn": "0/1204F360",
+      "replay_lag": 0,
+      "replay_lsn": "0/1204F360",
+      "lag": 0,
+      "lsn": "0/1204F360"
+    },
+    {
+      "name": "postgres3",
+      "role": "leader",
+      "state": "running",
+      "api_url": "http://postgres3:8008/patroni",
+      "host": "postgres3",
+      "port": 5432,
+      "timeline": 7
+    }
+  ],
+  "scope": "pharmacy-hw1"
+}

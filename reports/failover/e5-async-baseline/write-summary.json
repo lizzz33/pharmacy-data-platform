@@ -1,0 +1,15 @@
+{
+  "run_id": "e5-async-baseline-1792339248",
+  "started_at": "2026-10-18T16:00:48.602+00:00",
+  "elapsed_s": 30.019,
+  "successful_transactions": 1431,
+  "failed_transactions": 0,
+  "tps": 47.67,
+  "latency_ms_median": 3.828,
+  "latency_ms_p95": 10.378,
+  "first_error": null,
+  "last_success_before_failure": null,
+  "first_success_after_failure": null,
+  "rto_s": null,
+  "acknowledged_rows_missing": []
+}

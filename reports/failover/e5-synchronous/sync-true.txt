@@ -1,0 +1,10 @@
+--- 
++++ 
+@@ -19,5 +19,5 @@
+   use_pg_rewind: true
+   use_slots: true
+ retry_timeout: 10
+-synchronous_mode: false
++synchronous_mode: true
+ ttl: 30
+Configuration changed

@@ -109,7 +109,7 @@ notes/hw1/dbs_schemas/
 ### B. Реализованы физические PostgreSQL-схемы
 
 ```text
-db/migrations/
+migrations/
 ├── crm/
 │   ├── 001_initial_schema.sql
 │   ├── 002_invariants.sql
@@ -715,7 +715,7 @@ batch_expiry_date_snapshot
 - удалённая аптека / SKU / поставщик / РЦ обязана быть неактивной: `CHECK (deleted_at IS NULL OR NOT is_active)`;
 - удалённые значения справочников показываются в contract-views по одному правилу (§11).
 
-Необязательные edge cases и вопросы, которые не блокируют текущий checker, вынесены в `notes/hw1/open_questions.md`: чек вне смены / перекрытие смен, приёмка просрочки движением, более специфичные SQLSTATE, усиленный сценарий I7, I1 на более центральной сущности и несколько документационных допущений. Отдельно проверено: основное условие не требует переносить `db/migrations` в корневой `migrations/`, поэтому текущую структуру пока сохраняем.
+Необязательные edge cases и вопросы, которые не блокируют текущий checker, вынесены в `notes/hw1/open_questions.md`: чек вне смены / перекрытие смен, приёмка просрочки движением, более специфичные SQLSTATE, усиленный сценарий I7, I1 на более центральной сущности и несколько документационных допущений. Финальная структура миграций приведена к формальному layout задания: `migrations/<service>/` в корне репозитория.
 
 ---
 
@@ -884,6 +884,14 @@ docs/failover_journal.md
 
 с настоящими измерениями и raw logs.
 
+## L. Failover experiments и etcd quorum — закрыто ✅
+
+Э1–Э7 выполнены на реальном HA-стенде. В репозитории есть воспроизводимый
+harness `scripts/failover/`, техническая migration POS
+`004_failover_benchmark.sql`, заполненный `docs/failover_journal.md` и raw
+evidence в `reports/failover/`. После экспериментов восстановлены 3 PostgreSQL,
+3 etcd, async mode, RW leader route и RO replica route.
+
 ---
 
 # 14. Рекомендуемый порядок оставшейся работы
@@ -946,9 +954,10 @@ C01–C23 23/23, X01–X10 10/10, invariants 15/15, realism 5/5.
 
 Собрать manifest и прогнать преподавательский checker целиком.
 
-## Этап 8 — Patroni / HA / bonus
+## Этап 8 — Patroni / HA / bonus ✅
 
-Только после зелёной базовой части.
+Patroni/etcd/HAProxy/PgBouncer проверены live; failover bonus и отдельная
+демонстрация quorum etcd задокументированы реальными числами.
 
 ---
 
@@ -961,7 +970,7 @@ C01–C23 23/23, X01–X10 10/10, invariants 15/15, realism 5/5.
 2. CDC readiness
 3. async replica + PgBouncer
 4. final submission manifest + full checker
-5. Patroni / HA / bonuses — если идём дальше
+5. Финальный review submission-артефактов и известных edge cases
 ```
 
 Необязательные edge cases собраны в `notes/hw1/open_questions.md` и не должны тормозить основную работу.

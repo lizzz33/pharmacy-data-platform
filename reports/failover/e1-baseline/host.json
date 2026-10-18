@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-10-18T15:52:42+00:00",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "model": "MacBook Pro (MacBookPro18,3)",
+  "chip": "Apple M1 Pro",
+  "memory_gb": 16,
+  "machine": "arm64",
+  "processor": "arm",
+  "cpu_count": 8,
+  "disk_total_gib": 460,
+  "disk_available_gib": 104
+}

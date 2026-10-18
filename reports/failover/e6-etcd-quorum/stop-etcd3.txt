@@ -1,0 +1,2 @@
+ Container pharmacy-hw1-etcd3-1  Stopping
+ Container pharmacy-hw1-etcd3-1  Stopped

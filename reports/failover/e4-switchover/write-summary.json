@@ -1,0 +1,15 @@
+{
+  "run_id": "e4-switchover-1792339178",
+  "started_at": "2026-10-18T15:59:38.396+00:00",
+  "elapsed_s": 45.008,
+  "successful_transactions": 1981,
+  "failed_transactions": 3,
+  "tps": 44.014,
+  "latency_ms_median": 3.363,
+  "latency_ms_p95": 10.085,
+  "first_error": "OperationalError: server closed the connection unexpectedly",
+  "last_success_before_failure": "2026-10-18T15:59:48.506+00:00",
+  "first_success_after_failure": "2026-10-18T15:59:51.925+00:00",
+  "rto_s": 3.419,
+  "acknowledged_rows_missing": []
+}

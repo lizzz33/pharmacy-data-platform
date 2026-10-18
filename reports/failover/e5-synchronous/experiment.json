@@ -1,0 +1,6 @@
+{
+  "started_at": "2026-10-18T16:00:48+00:00",
+  "old_leader": "postgres1",
+  "new_leader": "postgres3",
+  "promotion_observed_s": 29.444
+}

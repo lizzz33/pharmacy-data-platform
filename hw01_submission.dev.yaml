@@ -1,11 +1,14 @@
 team:
   members:
-    - "Дмитрий Каневский"
-    - "Елизавета Бичурина"
-    - "Кауров Александр"
+    - Каневский Дмитрий
+    - Бичурина Елизавета
+    - Кауров Александр
+    - Ляхов Артем
   github_logins:
-    - "sblenlkj"
-    - "lizzz33"
+    - sblenlkj
+    - lizzz33
+    - lexbrown
+    - ArtemLiA
   solo: false
 
 entrypoint:

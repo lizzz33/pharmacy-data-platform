@@ -1,0 +1,24 @@
+check_timeline: true
+loop_wait: 10
+maximum_lag_on_failover: 1048576
+postgresql:
+  parameters:
+    datestyle: ISO, YMD
+    extra_float_digits: 3
+    hot_standby: 'on'
+    max_connections: 200
+    max_replication_slots: 10
+    max_slot_wal_keep_size: 2GB
+    max_wal_senders: 10
+    password_encryption: scram-sha-256
+    shared_buffers: 128MB
+    timezone: UTC
+    wal_keep_size: 256MB
+    wal_level: logical
+    wal_log_hints: 'on'
+  use_pg_rewind: true
+  use_slots: true
+retry_timeout: 10
+synchronous_mode: true
+ttl: 30
+

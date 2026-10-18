@@ -66,7 +66,7 @@ def prepare_ledger(conn):
 
 
 def apply_migrations(conn, service):
-    paths = sorted((ROOT / "db/migrations" / service).glob("[0-9]*.sql"))
+    paths = sorted((ROOT / "migrations" / service).glob("[0-9]*.sql"))
     if not paths:
         raise RuntimeError(f"no migrations for {service}")
     for path in paths:

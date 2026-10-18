@@ -1,22 +1,218 @@
+name: pharmacy-hw1
+
+x-log: &logging
+  driver: json-file
+  options: {max-size: 10m, max-file: '3'}
+
+x-etcd: &etcd
+  image: gcr.io/etcd-development/etcd:v3.5.21
+  restart: unless-stopped
+  logging: *logging
+  networks: [backend]
+  healthcheck:
+    test: [CMD, /usr/local/bin/etcdctl, --endpoints=http://127.0.0.1:2379, endpoint, health]
+    interval: 5s
+    timeout: 5s
+    retries: 30
+    start_period: 15s
+
+x-postgres: &postgres
+  image: pharmacy-hw1-patroni:local
+  build:
+    context: .
+    dockerfile: infra/patroni/Dockerfile
+  restart: unless-stopped
+  stop_grace_period: 60s
+  shm_size: 256mb
+  logging: *logging
+  networks: [backend]
+  environment: &patroni-environment
+    PATRONI_SUPERUSER_USERNAME: postgres
+    PATRONI_SUPERUSER_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    PATRONI_REPLICATION_USERNAME: replicator
+    PATRONI_REPLICATION_PASSWORD: ${REPLICATION_PASSWORD:-replicator}
+    PATRONI_RESTAPI_USERNAME: patroni
+    PATRONI_RESTAPI_PASSWORD: ${PATRONI_API_PASSWORD:-patroni}
+  depends_on:
+    etcd1: {condition: service_healthy}
+    etcd2: {condition: service_healthy}
+    etcd3: {condition: service_healthy}
+  healthcheck:
+    test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8008/health', timeout=3)"]
+    interval: 5s
+    timeout: 5s
+    retries: 60
+    start_period: 30s
+
+x-tools: &tools
+  image: pharmacy-hw1-tools:local
+  build:
+    context: .
+    dockerfile: infra/tools/Dockerfile
+  working_dir: /workspace
+  volumes:
+    - .:/workspace:ro
+    - ./reports:/reports
+  environment:
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    APP_PASSWORD: ${APP_PASSWORD:-app}
+    CHECKER_PASSWORD: ${CHECKER_PASSWORD:-checker}
+    PATRONI_API_PASSWORD: ${PATRONI_API_PASSWORD:-patroni}
+    PGHOST: pgbouncer-rw
+    PGPORT: '6432'
+    PGUSER: app
+    PGPASSWORD: ${APP_PASSWORD:-app}
+    PYTHONPATH: /workspace/src
+    PYTHONUNBUFFERED: '1'
+    PYTHONDONTWRITEBYTECODE: '1'
+  networks: [backend]
+
+x-pooler: &pooler
+  image: pharmacy-hw1-pgbouncer:local
+  build:
+    context: .
+    dockerfile: infra/pgbouncer/Dockerfile
+  restart: unless-stopped
+  logging: *logging
+  networks: [backend]
+  depends_on:
+    db-init: {condition: service_completed_successfully}
+    haproxy: {condition: service_healthy}
+  healthcheck:
+    test: [CMD-SHELL, 'PGPASSWORD="$$CHECKER_PASSWORD" psql -h 127.0.0.1 -p 6432 -U checker -d pos_service_db -XAtqc "SELECT 1 FROM contract.v_receipt LIMIT 0"']
+    interval: 5s
+    timeout: 5s
+    retries: 30
+    start_period: 15s
+
 services:
-  postgres:
-    image: postgres:16-alpine
+  etcd1:
+    <<: *etcd
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd1
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd1:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd1:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-token=pharmacy-hw1-etcd
+      - --initial-cluster-state=new
+    volumes: [etcd1-data:/etcd-data]
+  etcd2:
+    <<: *etcd
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd2
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd2:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd2:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-token=pharmacy-hw1-etcd
+      - --initial-cluster-state=new
+    volumes: [etcd2-data:/etcd-data]
+  etcd3:
+    <<: *etcd
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd3
+      - --data-dir=/etcd-data
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://etcd3:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://etcd3:2380
+      - --initial-cluster=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - --initial-cluster-token=pharmacy-hw1-etcd
+      - --initial-cluster-state=new
+    volumes: [etcd3-data:/etcd-data]
+
+  postgres1:
+    <<: *postgres
     environment:
-      POSTGRES_USER: pharmacy
-      POSTGRES_PASSWORD: pharmacy
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
+      <<: *patroni-environment
+      PATRONI_NAME: postgres1
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: postgres1:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: postgres1:8008
+    volumes: [postgres1-data:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:15432:5432', '127.0.0.1:8008:8008']
+  postgres2:
+    <<: *postgres
+    environment:
+      <<: *patroni-environment
+      PATRONI_NAME: postgres2
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: postgres2:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: postgres2:8008
+    volumes: [postgres2-data:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:25432:5432', '127.0.0.1:8009:8008']
+  postgres3:
+    <<: *postgres
+    environment:
+      <<: *patroni-environment
+      PATRONI_NAME: postgres3
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: postgres3:5432
+      PATRONI_RESTAPI_CONNECT_ADDRESS: postgres3:8008
+    volumes: [postgres3-data:/var/lib/postgresql/data]
+    ports: ['127.0.0.1:35432:5432', '127.0.0.1:8010:8008']
+
+  haproxy:
+    image: pharmacy-hw1-haproxy:local
+    build:
+      context: .
+      dockerfile: infra/haproxy/Dockerfile
+    restart: unless-stopped
+    logging: *logging
+    networks: [backend]
+    depends_on:
+      postgres1: {condition: service_started}
+      postgres2: {condition: service_started}
+      postgres3: {condition: service_started}
+    ports: ['127.0.0.1:5000:5000', '127.0.0.1:5001:5001', '127.0.0.1:8404:8404']
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U pharmacy -d postgres && psql -h 127.0.0.1 -U pharmacy -d pos_service_db -Atqc 'SELECT 1 FROM contract.v_receipt LIMIT 0'"]
-      interval: 2s
+      test: [CMD, curl, --fail, --silent, --max-time, '3', http://127.0.0.1:8404/healthz]
+      interval: 5s
       timeout: 5s
-      retries: 15
-      start_period: 60s
-    volumes:
-      - pharmacy_postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
-      - ./db/migrations:/migrations:ro
+      retries: 30
+      start_period: 15s
+
+  db-init:
+    <<: *tools
+    restart: 'no'
+    command: [python, scripts/infra/bootstrap.py]
+    depends_on:
+      postgres1: {condition: service_healthy}
+      postgres2: {condition: service_healthy}
+      postgres3: {condition: service_healthy}
+      haproxy: {condition: service_healthy}
+
+  pgbouncer-rw:
+    <<: *pooler
+    environment:
+      POOL_ROUTE: rw
+      CHECKER_PASSWORD: ${CHECKER_PASSWORD:-checker}
+      APP_PASSWORD: ${APP_PASSWORD:-app}
+    ports: ['127.0.0.1:6432:6432']
+  pgbouncer-ro:
+    <<: *pooler
+    environment:
+      POOL_ROUTE: ro
+      CHECKER_PASSWORD: ${CHECKER_PASSWORD:-checker}
+    ports: ['127.0.0.1:6433:6432']
+
+  tools:
+    <<: *tools
+    profiles: [tools]
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
-  pharmacy_postgres_data:
+  postgres1-data:
+  postgres2-data:
+  postgres3-data:
+  etcd1-data:
+  etcd2-data:
+  etcd3-data:

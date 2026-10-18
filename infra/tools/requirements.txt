@@ -1,0 +1,3 @@
+# Same versions as the team's uv.lock; the package is imported from /workspace/src.
+psycopg2-binary==2.9.13
+PyYAML==6.0.3

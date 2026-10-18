@@ -1,0 +1,15 @@
+diff --git a/hws_descriptions/hw1/hw01_check.py b/hws_descriptions/hw1/hw01_check.py
+--- a/hws_descriptions/hw1/hw01_check.py
++++ b/hws_descriptions/hw1/hw01_check.py
+@@ -852,7 +852,10 @@
+             members = data.get("members", [])
+             roles = [(m.get("name"), m.get("role"), m.get("state")) for m in members]
+             leaders = [m for m in members if m.get("role") == "leader"]
+-            running = [m for m in members if m.get("state") == "running"]
++            running = [m for m in members
++                       if m.get("state") == "running"
++                       or (m.get("role") in ("replica", "sync_standby", "quorum_standby")
++                           and m.get("state") == "streaming")]
+             rep.add("ha", "members", f"в кластере {expected} узлов",
+                     len(members) >= expected,
+                     "; ".join(f"{n}:{r}/{s}" for n, r, s in roles))

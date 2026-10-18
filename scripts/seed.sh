@@ -4,4 +4,4 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
-exec uv run python -m pharmacy_dwh.seed.cli "$@"
+exec docker compose run --rm -T --no-deps tools python scripts/infra/seed.py "$@"

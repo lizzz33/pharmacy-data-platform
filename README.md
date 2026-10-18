@@ -1,107 +1,91 @@
-# Pharmacy data warehouse homework
+# Pharmacy data platform — HW1
 
-## HW1 local source databases
+Командный проект: четыре PostgreSQL-источника аптечной сети и учебный HA-стенд.
 
-The initial HW1 source schemas run in one PostgreSQL container with four
-separate databases:
+**Текущее состояние инфраструктуры:** файлы подготовлены и статически проверены.
+Образы не собирались, контейнеры не запускались, работоспособность и баллы
+официального чекера на HA-стенде пока не подтверждены.
+
+## Документация
+
+- [Состав, порты, запуск и параллельная работа](docs/infra/README.md).
+- [Замечания команде бизнес-логики и метод проверки](docs/infra/business-review.md).
+- [Несовместимость чекера с Patroni streaming](docs/infra/checker-compatibility.md).
+- [Внешние источники инфраструктуры](docs/sources.md).
+- [Статус проекта и исходные дизайн-заметки](notes/hw1/plan.md).
+
+## Стенд
+
+`docker-compose.yml` описывает три PostgreSQL 16 с Patroni, три etcd,
+HAProxy, два PgBouncer, автоматическую инициализацию и контейнер tools.
+На каждом PostgreSQL находятся четыре БД:
 
 - `crm_service_db`
 - `catalog_service_db`
-- `wms_service_db`
 - `pos_service_db`
+- `wms_service_db`
 
-Start the local stack and check its status:
+Основные локальные DSN, одинаковые для всех четырёх имён баз:
 
-```sh
-docker compose up -d
-docker compose ps
+```text
+postgresql://checker:checker@localhost:6432/pos_service_db
+postgresql://checker:checker@localhost:6433/pos_service_db
+postgresql://app:app@localhost:6432/pos_service_db
+postgresql://postgres:postgres@localhost:5000/pos_service_db
 ```
 
-PostgreSQL is exposed on `localhost:5432`. The local development credentials
-are `pharmacy` / `pharmacy`. On the first start, the scripts under
-`docker/postgres/init/` create the databases and apply the numbered migrations
-from `db/migrations/<service>/`.
+6432 — пул к лидеру, 6433 — пул к репликам. HAProxy напрямую: 5000 RW,
+5001 RO. API Patroni: 8008/8009/8010; HAProxy statistics: 8404/stats.
+Пароли по умолчанию предназначены для этого локального учебного стенда.
 
-To exercise initialization again from an empty local data volume:
+## Первый запуск — отдельный будущий этап
 
-```sh
-docker compose down -v
-docker compose up -d
-```
+Требуется Docker с Compose v2. Python/uv/Ruby на хосте для HA-команд не нужны.
+Shell-команды на Windows выполнять из WSL/Git Bash.
 
-Run the isolated database-invariant tests after the stack is healthy:
-
-```sh
-./scripts/test_invariants.sh
-```
-
-The runner executes every negative test in its own transaction, verifies the
-observed PostgreSQL SQLSTATE, and rolls back the two positive tests.
-
-Validate the `contract.*` interface, rollback-only representative fixtures,
-and course checks C01-C23:
-
-```sh
-./scripts/test_contracts.sh
-```
-
-The contract validator reads `hws_descriptions/hw1/hw01_contract.yaml`
-directly and requires Ruby's standard YAML library.
-
-## Generate the HW1 dataset
-
-After the stack is healthy, generate the deterministic assignment-scale dataset:
-
-```sh
+```bash
+docker compose up -d --build
+./scripts/wait_ready.sh
 ./scripts/seed.sh --seed 42
+./scripts/check.sh --json /reports/hw01-full.json -v
 ```
 
-The default data horizon is the exclusive date `2026-10-01`; pass
-`--as-of YYYY-MM-DD` to select another fixed horizon. A seed value defines a namespace
-for every generated business key. Repeating the same command is idempotent.
+Данные генерируются отдельной командой после создания схем. Readiness проверяет
+все четыре контракта и обе реплики. `scripts/check.sh` вызывает **неизменённый**
+официальный чекер с контейнерными адресами. Прочитать заметку о streaming выше:
+одна проверка HA может оказаться ложной ошибкой самого чекера.
 
-Append a smaller, independently namespaced portion for replication/delta tests:
+Проверка с хоста при наличии Python >=3.12 и uv:
 
-```sh
-./scripts/seed.sh --seed 43 --delta
+```bash
+uv run python hws_descriptions/hw1/hw01_check.py --submission hw01_submission.yaml -v
 ```
 
-Repeating an identical delta is also idempotent. Use a different seed to append
-another non-colliding namespace.
+`hw01_submission.yaml` содержит адреса localhost; `hw01_submission.container.yaml`
+— имена Docker-сервисов. Оба манифеста включают master, replica, writer и admin.
+`seed_delta` получает новый seed из sequence для каждого прогона репликации.
 
-The base scale is approximately 2,200 customers, 550 SKU, 21,500 receipts,
-63,500 receipt lines, 3,300 batches, 5,400 purchase lines, and 92,000 stock
-movements. It covers 18 months. Demand is deliberately non-uniform: weekends
-are busier, pharmacy sizes differ, popular SKU follow a long-tail distribution,
-about 43% of documents have no customer card, and refunds are about 2.4% of
-documents. WMS stock is derived only through movement inserts.
+После добавления нумерованной миграции:
 
-## Run the official course checker
-
-The repository already contains a working `hw01_submission.yaml` for the current local setup.
-
-Run the official data, cross-service, invariant, and realism checks:
-
-```sh
-uv run python hws_descriptions/hw1/hw01_check.py \
-  --submission ./hw01_submission.yaml \
-  --sections contract,keys,volume,dq,cross,inv,realism \
-  --skip-exec \
-  -v
+```bash
+./scripts/migrate.sh
 ```
 
-The checker requires the Python dependencies declared in `pyproject.toml` (`PyYAML` and `psycopg2-binary`), so run it through `uv` as shown above.
+После обычной остановки volumes сохраняются:
 
-This command has been executed successfully on the generated dataset. The result
-is fully green for the selected sections:
+```bash
+docker compose down
+```
 
-- contract views: 14/14;
-- contract nullability and uniqueness: 27/27;
-- volume thresholds: 14/14;
-- data-quality checks C01-C23: 23/23;
-- cross-service checks X01-X10: 10/10;
-- invariants I1-I12, P1/P2, and leakage: 15/15;
-- realism checks: 5/5.
+## Работа команды
 
-The remaining checker sections (`repl`, `cdc`, and `ha`) are outside the seed
-generator stage and have not been implemented yet.
+Доменный SQL, генератор и тесты сохранены. Команда продолжает исправлять их
+независимо от инфраструктурной ветки. Уже применённые миграции не переписывать:
+добавлять следующий номер или согласовать чистое пересоздание учебного стенда.
+
+Прежний одиночный PostgreSQL доступен через `docker-compose.dev.yml` с отдельным
+Compose project; команды для него приведены в инфраструктурной документации.
+
+Не завершены: живой прогон HA, эксперименты отказоустойчивости, исправления
+бизнес-логики, финальные ERD, обязательные ADR и карта DWH mapping. Наличие
+конфигурации etcd из трёх узлов само по себе ещё не подтверждает бонус.
